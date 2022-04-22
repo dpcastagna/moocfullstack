@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+//import axios from 'axios'
+import personService from './services/persons'
 
 const Filter = (props) => {
   //console.log(props)
-
   return(
     <div>
     filter shown with <input 
@@ -39,6 +39,7 @@ const PersonForm = (props) => {
 }
 
 const Persons = (props) => {
+  //console.log(props)
   return(
     <div>
       {props.persons.map(person =>
@@ -57,14 +58,15 @@ const App = () => {
 
   useEffect(() => {
     console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
+    personService
+      .getAll()
       .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
+        //console.log(response)
+        //console.log('promise fulfilled')
+        setPersons(response)
       })
   }, [])
-  console.log('render', persons.length, 'notes')
+  //console.log('render', persons.length, 'notes')
 
   const addName = (event) => {
     let found = false
@@ -89,10 +91,10 @@ const App = () => {
         number: newNumber,
         //id: persons.length + 1,
       }
-      axios
-        .post('http://localhost:3001/persons', personObject)
+      personService
+        .create(personObject)
         .then(response => {
-          setPersons(persons.concat(response.data))
+          setPersons(persons.concat(response))
           setNewName('')
           setNewNumber('')
       })
@@ -120,7 +122,8 @@ const App = () => {
     //console.log(event.target.value)
     setNewNumber(event.target.value)
   }
-
+  //console.log("persons", persons)
+  //console.log("personsToShow", personsToShow)
   return (
     <div>
       <h2>Phonebook</h2>

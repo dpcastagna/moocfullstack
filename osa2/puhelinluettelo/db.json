@@ -24,6 +24,21 @@
       "name": "Marko Hartomaa",
       "number": "123456",
       "id": 5
+    },
+    {
+      "name": "Gary Lacepopper",
+      "number": "654321",
+      "id": 6
+    },
+    {
+      "name": "Harri Mellas",
+      "number": "98765",
+      "id": 7
+    },
+    {
+      "name": "Karri Pellas",
+      "number": "54367372",
+      "id": 8
     }
   ]
 }
