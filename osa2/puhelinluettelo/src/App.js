@@ -43,7 +43,8 @@ const Persons = (props) => {
   return(
     <div>
       {props.persons.map(person =>
-        <p key={person.id}>{person.name} {person.number}</p>
+        <p key={person.id}>{person.name} {person.number}
+        <button onClick={() => props.remove(person.id)}>delete</button></p>
       )}
     </div>
   )
@@ -80,17 +81,28 @@ const App = () => {
         console.log("found")
       }
     })
+
+    const personObject = {
+      name: newName,
+      number: newNumber,
+      //id: persons.length + 1,
+    }
     
     if(found){
-      window.alert(`${newName} is already added to phonebook`)
+      const result = window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)
+      if (result){
+        const person = personsToShow.find(p => p.name === newName)
+        personService 
+          .update(person.id, personObject)
+          .then(response => {
+            console.log("päivitetty")
+            setPersons(personsToShow.map(p => p.id !== person.id ? p : response ))
+          }
+          )
+      }
       setNewName('')
       setNewNumber('')
     } else {
-      const personObject = {
-        name: newName,
-        number: newNumber,
-        //id: persons.length + 1,
-      }
       personService
         .create(personObject)
         .then(response => {
@@ -101,6 +113,20 @@ const App = () => {
       //setPersons(persons.concat(personObject))
       
     }
+  }
+
+  const removePerson = (id) => {
+    const person = personsToShow.find(p => p.id === id)
+    const result = window.confirm(`Delete ${person.name} ?`);
+    console.log(result)
+    if (result) {
+      personService
+        .remove(person.id)
+        .then(response => {
+          console.log("poistettu")
+          setPersons(personsToShow.filter(p => p.id !== id))
+        }
+      )}
   }
 
   const personsToShow = showAll
@@ -137,7 +163,7 @@ const App = () => {
                   handleNumber={handleNumberChange} />
       
       <h2>Numbers</h2>
-      <Persons persons={personsToShow} />
+      <Persons persons={personsToShow} remove={removePerson} />
     </div>
   )
 
