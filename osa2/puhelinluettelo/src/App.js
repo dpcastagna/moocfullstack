@@ -43,9 +43,29 @@ const Persons = (props) => {
   return(
     <div>
       {props.persons.map(person =>
-        <p key={person.id}>{person.name} {person.number}
+        <p key={person.id}>{person.name} {person.number} &nbsp;
         <button onClick={() => props.remove(person.id)}>delete</button></p>
       )}
+    </div>
+  )
+}
+
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+  console.log(message.includes("Removed"))
+  if (message.includes("Removed")) {
+    return (
+      <div className="failure">
+        {message}
+      </div>
+    )
+  }
+
+  return (
+    <div className="success">
+      {message}
     </div>
   )
 }
@@ -56,6 +76,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [showAll, setShowAll] = useState(true)
   const [newFilter, setNewFilter] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState(null)
 
   useEffect(() => {
     console.log('effect')
@@ -97,8 +118,12 @@ const App = () => {
           .then(response => {
             console.log("päivitetty")
             setPersons(personsToShow.map(p => p.id !== person.id ? p : response ))
-          }
-          )
+            setNotificationMessage(
+              `Changed number for ${newName}`)
+              setTimeout(() => {
+                setNotificationMessage(null)
+              }, 5000)
+          })
       }
       setNewName('')
       setNewNumber('')
@@ -109,6 +134,11 @@ const App = () => {
           setPersons(persons.concat(response))
           setNewName('')
           setNewNumber('')
+          setNotificationMessage(
+            `Added ${newName}`)
+            setTimeout(() => {
+              setNotificationMessage(null)
+            }, 5000)
       })
       //setPersons(persons.concat(personObject))
       
@@ -125,6 +155,11 @@ const App = () => {
         .then(response => {
           console.log("poistettu")
           setPersons(personsToShow.filter(p => p.id !== id))
+          setNotificationMessage(
+            `Removed ${person.name}`)
+            setTimeout(() => {
+              setNotificationMessage(null)
+            }, 5000)
         }
       )}
   }
@@ -153,6 +188,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notificationMessage} />
       <Filter handleFilter={handleFilterChange} filter={newFilter}/>
       
       <h2>Add a new</h2>
