@@ -2,7 +2,7 @@
   "persons": [
     {
       "name": "Arto Hellas",
-      "number": "040-1234565432123456",
+      "number": "040-12345654321",
       "id": 1
     },
     {
@@ -24,11 +24,6 @@
       "name": "Gan Lacepopper",
       "number": "12345634567",
       "id": 6
-    },
-    {
-      "name": "Marko Hartomaa",
-      "number": "09-1234567",
-      "id": 7
     }
   ]
 }

@@ -54,8 +54,8 @@ const Notification = ({ message }) => {
   if (message === null) {
     return null
   }
-  console.log(message.includes("Removed"))
-  if (message.includes("Removed")) {
+  console.log(message.toLowerCase().includes("removed"))
+  if (message.toLowerCase().includes("removed")) {
     return (
       <div className="failure">
         {message}
@@ -122,8 +122,17 @@ const App = () => {
               `Changed number for ${newName}`)
               setTimeout(() => {
                 setNotificationMessage(null)
-              }, 5000)
+              }, 5000)  
           })
+          .catch(error => {
+            setNotificationMessage(
+              `Information of ${person.name} has already been removed from the server`)
+              setTimeout(() => {
+                setNotificationMessage(null)
+              }, 5000)
+              console.log("catchissa", error)
+              setPersons(personsToShow.filter(p => p.id !== person.id))
+            })
       }
       setNewName('')
       setNewNumber('')
