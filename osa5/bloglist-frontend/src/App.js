@@ -20,28 +20,47 @@ const App = () => {
     )  
   }, [])
 
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      blogService.setToken(user.token)
+    }
+  }, [])
+
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
       const user = await loginService.login({
         username, password,
       })
-      console.log(user)
+      //console.log(user)
+
+      window.localStorage.setItem(
+        'loggedBlogappUser', JSON.stringify(user)
+      ) 
+      blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorMessage('wrong credentials')
+      setErrorMessage('wrong username or password')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
     }
   }
 
+  const handleLogout = (event) => {
+    event.preventDefault()
+    window.localStorage.removeItem('loggedBlogappUser')
+  }
+
   const addBlog = (event) => {
     event.preventDefault()
     const blogObject = {
-      content: newTitle,
+      title: newTitle,
       author: newAuthor,
       url: newUrl,
       //id: notes.length + 1,
@@ -55,6 +74,10 @@ const App = () => {
         setNewAuthor('')
         setNewUrl('')
       })
+    setErrorMessage(`a new blog ${blogObject.title} by ${blogObject.author} added`)
+    setTimeout(() => {
+      setErrorMessage(null)
+    }, 5000)
   }
 
   const loginForm = () => (
@@ -93,6 +116,7 @@ const App = () => {
 
   const blogForm = () => (
     <form onSubmit={addBlog}>
+      <h2>create new</h2>
       title:
       <input
         value={newTitle}
@@ -116,7 +140,7 @@ const App = () => {
     return (
       <div>
         <h2>login to application</h2>
-        <Notification message={errorMessage} />
+        <Notification message={errorMessage} class="error" />
         {loginForm()}
       </div>
     )
@@ -125,7 +149,13 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <p>{user.name} logged in</p>
+      <Notification message={errorMessage} class="success" />
+      <form onSubmit={handleLogout}>
+        <p>
+          {user.name} logged in
+          <button type="submit">logout</button>
+        </p>
+      </form>
       <Notification message={errorMessage} />
       {blogForm()}
       {blogs.map(blog =>
