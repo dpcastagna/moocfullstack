@@ -54,6 +54,7 @@ const App = () => {
   const handleLogout = (event) => {
     event.preventDefault()
     window.localStorage.removeItem('loggedBlogappUser')
+    window.location.reload() //reloads page after logout
   }
 
   const addBlog = (blogObject) => {
@@ -119,7 +120,7 @@ const App = () => {
         <BlogForm createBlog={addBlog} />
       </Togglable>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} user={user} />
       )}
     </div>
   )
