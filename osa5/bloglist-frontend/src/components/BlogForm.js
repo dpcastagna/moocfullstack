@@ -21,6 +21,7 @@ const BlogForm = ({ createBlog }) => {
           title: newTitle,
           author: newAuthor,
           url: newUrl,
+          likes: 0,
           //id: notes.length + 1,
         }
         createBlog(blogObject)
