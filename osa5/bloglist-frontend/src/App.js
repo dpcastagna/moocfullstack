@@ -54,7 +54,7 @@ const App = () => {
   const handleLogout = (event) => {
     event.preventDefault()
     window.localStorage.removeItem('loggedBlogappUser')
-    window.location.reload() //reloads page after logout
+    window.location.reload() //reloads page after logout button press
   }
 
   const addBlog = (blogObject) => {

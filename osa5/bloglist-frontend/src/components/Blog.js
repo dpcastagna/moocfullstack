@@ -14,6 +14,9 @@ const Blog = ({blog, user}) => {
   const [likes, setLikes] = useState(blog.likes)
   const hideWhenVisible = { display: visible ? 'none' : '' }
   const showWhenVisible = { display: visible ? '' : 'none' }
+  const sameUser = blog.user.name === user.name
+  const showRemove = { display: sameUser ? '' : 'none' }
+  console.log("nimi sama", sameUser, visible)
 
   const toggleVisibility = () => {
     setVisible(!visible)
@@ -26,7 +29,7 @@ const Blog = ({blog, user}) => {
       title: blog.title,
       author: blog.author,
       url: blog.url,
-      likes: blog.likes + 1,
+      likes: likes + 1,
       user: user._id,
     }
 
@@ -35,6 +38,18 @@ const Blog = ({blog, user}) => {
       .then(
         setLikes(blog.likes += 1)
       )
+  }
+
+  const removeBlog = (event) => {
+    event.preventDefault()
+    if(window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      console.log("jee", blog.id)
+      blogService
+        .remove(blog.id)
+        .then(
+          window.location.reload()
+        )
+    }
   }
 
   return(
@@ -49,6 +64,9 @@ const Blog = ({blog, user}) => {
         {blog.url}<br />
         likes {blog.likes}<button onClick={likeSend}>like</button><br />
         {blog.user.name}
+        <div style={showRemove}>
+          <button onClick={removeBlog}>remove</button>
+        </div>
       </div>
     </div>  
 )}
