@@ -16,7 +16,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs)
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const App = () => {
 
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
-      ) 
+      )
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
@@ -74,7 +74,7 @@ const App = () => {
     <form onSubmit={handleLogin}>
       <div>
         username
-          <input
+        <input
           type="text"
           value={username}
           name="Username"
@@ -83,7 +83,7 @@ const App = () => {
       </div>
       <div>
         password
-          <input
+        <input
           type="password"
           value={password}
           name="Password"
@@ -91,7 +91,7 @@ const App = () => {
         />
       </div>
       <button type="submit">login</button>
-    </form>      
+    </form>
   )
 
   const blogFormRef = useRef()
@@ -121,8 +121,8 @@ const App = () => {
       </Togglable>
       {blogs.sort((a, b) => {
         return (a.likes > b.likes) ? -1 : 1
-        }).map(blog =>
-          <Blog key={blog.id} blog={blog} user={user} />
+      }).map(blog =>
+        <Blog key={blog.id} blog={blog} user={user} />
       )}
     </div>
   )
