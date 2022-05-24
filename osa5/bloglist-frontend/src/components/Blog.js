@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import blogService from '../services/blogs'
+import PropTypes from 'prop-types'
 
 const Blog = ({blog, user}) => {
   const blogStyle = {
@@ -16,7 +17,7 @@ const Blog = ({blog, user}) => {
   const showWhenVisible = { display: visible ? '' : 'none' }
   const sameUser = blog.user.name === user.name
   const showRemove = { display: sameUser ? '' : 'none' }
-  console.log("nimi sama", sameUser, visible)
+  //console.log("nimi sama", sameUser, visible)
 
   const toggleVisibility = () => {
     setVisible(!visible)
@@ -70,5 +71,10 @@ const Blog = ({blog, user}) => {
       </div>
     </div>  
 )}
+
+Blog.propTypes = {
+  blog: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired
+}
 
 export default Blog
