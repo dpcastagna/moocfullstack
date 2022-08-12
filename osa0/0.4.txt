@@ -1,7 +1,7 @@
 selain->palvelin: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note
 
 note over selain:
-selain lähettää lomakkeen tiedot palvelimelle {note="jee"}
+selain lähettää lomakkeen tiedot palvelimelle {note: "jee"}
 end note
 
 selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/exampleapp/notes

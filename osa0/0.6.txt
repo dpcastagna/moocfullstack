@@ -2,5 +2,5 @@ selain->palvelin: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_s
 
 note over selain:
 selain suorittaa tapahtumankäsittelijän
-joka renderöi vanhat ja juuri lähetetyn muistiinpanon näytölle
+joka renderöi juuri lähetetyn muistiinpanon listan alimmaiseksi
 end note
