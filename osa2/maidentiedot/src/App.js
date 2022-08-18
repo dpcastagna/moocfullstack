@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react'
-//import axios from 'axios'
-import personService from './services/countries'
+import countryService from './services/countries'
 
 const Filter = (props) => {
   //console.log(props)
   return(
     <div>
-    filter shown with <input 
+    find countries <input 
                   value={props.filter}
                   onChange={props.handleFilter}
                 />
@@ -14,201 +13,90 @@ const Filter = (props) => {
   )
 }
 
-const PersonForm = (props) => {
+const Countries = (props) => {
+  console.log(props)
+  if (props.countries.length > 10) {
+    return(
+      <div>
+        Too many matches, specify another filter
+      </div>
+    )
+  } else if (props.countries.length > 1) {
+    return(
+      <div>
+        {props.countries.map(country =>
+        <p key={country.name.common}>{country.name.common} <img src={country.flags.png} alt="flag"></img> &nbsp;
+        <button onClick={() => props.remove(country.id)}>delete</button></p>
+      )}
+      </div>
+    )
+  } else if (props.countries.length === 1) {
+    return(
+      <div>
+        {props.countries.map(country =>
+        <Country country={country}/>
+      )}
+      </div>
+    )
+  }
   return(
     <div>
-      <form onSubmit={props.submit}>
-        <div>
-          name: <input 
-                  value={props.name}
-                  onChange={props.handleName}
-                />
-        </div>
-        <div>
-          number: <input 
-                  value={props.number}
-                  onChange={props.handleNumber}
-                />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-    </div>
-  )
-}
-
-const Persons = (props) => {
-  //console.log(props)
-  return(
-    <div>
-      {props.persons.map(person =>
-        <p key={person.name.common}>{person.name.common} <img src={person.flags.png} alt="flag"></img> &nbsp;
-        <button onClick={() => props.remove(person.id)}>delete</button></p>
+      {props.countries.map(country =>
+        <p key={country.name.common}>{country.name.common} <img src={country.flags.png} alt="flag"></img> &nbsp;
+        <button onClick={() => props.remove(country.id)}>delete</button></p>
       )}
     </div>
   )
 }
 
-const Notification = ({ message }) => {
-  if (message === null) {
-    return null
-  }
-  console.log(message.toLowerCase().includes("removed"))
-  if (message.toLowerCase().includes("removed")) {
-    return (
-      <div className="failure">
-        {message}
-      </div>
-    )
-  }
-
-  return (
-    <div className="success">
-      {message}
+const Country = (props) => {
+  const country = props.country
+  const languages = Object.values(country.languages)
+  console.log(languages)
+  return(
+    <div key={country.name.common}>
+      <h1>{country.name.common}</h1>
+      capital {country.capital}<br />
+      area {country.area}<br />
+      <h3>languages:</h3><br />
+      <ul>
+      {languages.map(language => 
+        <li key={language}>{language}</li>)}
+      </ul>
+      <img src={country.flags.png} alt="flag"></img>
     </div>
   )
 }
 
 const App = () => {
-  const [persons, setPersons] = useState([])
-  const [newName, setNewName] = useState('')
-  const [newNumber, setNewNumber] = useState('')
+  const [countries, setCountries] = useState([])
   const [showAll, setShowAll] = useState(true)
   const [newFilter, setNewFilter] = useState('')
-  const [notificationMessage, setNotificationMessage] = useState(null)
 
   useEffect(() => {
     console.log('effect')
-    personService
+    countryService
       .getAll()
       .then(response => {
-        //console.log(response)
-        //console.log('promise fulfilled')
-        setPersons(response)
+        setCountries(response)
       })
   }, [])
-  //console.log('render', persons.length, 'notes')
 
-  const addName = (event) => {
-    let found = false
-
-    event.preventDefault()
-    console.log('button clicked', event.target)
-    
-    persons.forEach(person => {
-      if (person.name === newName){
-        found = true
-        console.log("found")
-      }
-    })
-
-    const personObject = {
-      name: newName,
-      number: newNumber,
-      //id: persons.length + 1,
-    }
-    
-    if(found){
-      const result = window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)
-      if (result){
-        const person = personsToShow.find(p => p.name === newName)
-        personService 
-          .update(person.id, personObject)
-          .then(response => {
-            console.log("päivitetty")
-            setPersons(personsToShow.map(p => p.id !== person.id ? p : response ))
-            setNotificationMessage(
-              `Changed number for ${newName}`)
-              setTimeout(() => {
-                setNotificationMessage(null)
-              }, 5000)  
-          })
-          .catch(error => {
-            setNotificationMessage(
-              `Information of ${person.name} has already been removed from the server`)
-              setTimeout(() => {
-                setNotificationMessage(null)
-              }, 5000)
-              console.log("catchissa", error)
-              setPersons(personsToShow.filter(p => p.id !== person.id))
-            })
-      }
-      setNewName('')
-      setNewNumber('')
-    } else {
-      personService
-        .create(personObject)
-        .then(response => {
-          setPersons(persons.concat(response))
-          setNewName('')
-          setNewNumber('')
-          setNotificationMessage(
-            `Added ${newName}`)
-            setTimeout(() => {
-              setNotificationMessage(null)
-            }, 5000)
-      })
-      //setPersons(persons.concat(personObject))
-      
-    }
-  }
-
-  const removePerson = (id) => {
-    const person = personsToShow.find(p => p.id === id)
-    const result = window.confirm(`Delete ${person.name} ?`);
-    console.log(result)
-    if (result) {
-      personService
-        .remove(person.id)
-        .then(response => {
-          console.log("poistettu")
-          setPersons(personsToShow.filter(p => p.id !== id))
-          setNotificationMessage(
-            `Removed ${person.name}`)
-            setTimeout(() => {
-              setNotificationMessage(null)
-            }, 5000)
-        }
-      )}
-  }
-
-  const personsToShow = showAll
-    ? persons
-    : persons.filter(person => person.name.common.toLowerCase().includes(newFilter.toLowerCase()))
-  //console.log("personsToShow", personsToShow)
+  const countriesToShow = showAll
+    ? countries
+    : countries.filter(country => country.name.common.toLowerCase().includes(newFilter.toLowerCase()))
+  //console.log("countriesToShow", countriesToShow)
 
   const handleFilterChange = (event) => {
     //console.log(event.target.value)
     setNewFilter(event.target.value)
     setShowAll(false)
   }
-  const handleNameChange = (event) => {
-    //console.log(event.target.value)
-    setNewName(event.target.value)
-  }
-
-  const handleNumberChange = (event) => {
-    //console.log(event.target.value)
-    setNewNumber(event.target.value)
-  }
-  //console.log("persons", persons)
-  //console.log("personsToShow", personsToShow)
+  
   return (
     <div>
-      <h2>Phonebook</h2>
-      <Notification message={notificationMessage} />
       <Filter handleFilter={handleFilterChange} filter={newFilter}/>
-      
-      <h2>Add a new</h2>
-      <PersonForm submit={addName} 
-                  name={newName} 
-                  handleName={handleNameChange} 
-                  number={newNumber}
-                  handleNumber={handleNumberChange} />
-      
-      <h2>Numbers</h2>
-      <Persons persons={personsToShow} remove={removePerson} />
+      <Countries countries={countriesToShow} />
     </div>
   )
 
