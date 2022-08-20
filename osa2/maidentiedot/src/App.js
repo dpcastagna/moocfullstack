@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useImperativeHandle, forwardRef } from 'react'
 import countryService from './services/countries'
 
 const Filter = (props) => {
   //console.log(props)
-  return(
+  return (
     <div>
     find countries <input 
                   value={props.filter}
@@ -14,7 +14,7 @@ const Filter = (props) => {
 }
 
 const Countries = (props) => {
-  console.log(props)
+  //console.log(props)
   if (props.countries.length > 10) {
     return(
       <div>
@@ -22,29 +22,32 @@ const Countries = (props) => {
       </div>
     )
   } else if (props.countries.length > 1) {
-    return(
+    return (
       <div>
         {props.countries.map(country =>
-        <p key={country.name.common}>{country.name.common} <img src={country.flags.png} alt="flag"></img> &nbsp;
-        <button onClick={() => props.remove(country.id)}>delete</button></p>
+        <div key={country.name.common}>
+        <Togglable >
+          <Country country={country} />
+        </Togglable>
+        </div>
       )}
       </div>
     )
   } else if (props.countries.length === 1) {
-    return(
+    return (
       <div>
         {props.countries.map(country =>
-        <Country country={country}/>
+        <div key={country.name.common}>
+          <Country country={country}/>
+        </div>
       )}
       </div>
     )
   }
-  return(
+
+  return (
     <div>
-      {props.countries.map(country =>
-        <p key={country.name.common}>{country.name.common} <img src={country.flags.png} alt="flag"></img> &nbsp;
-        <button onClick={() => props.remove(country.id)}>delete</button></p>
-      )}
+      No matches found.
     </div>
   )
 }
@@ -53,12 +56,12 @@ const Country = (props) => {
   const country = props.country
   const languages = Object.values(country.languages)
   console.log(languages)
-  return(
+  return (
     <div key={country.name.common}>
       <h1>{country.name.common}</h1>
       capital {country.capital}<br />
       area {country.area}<br />
-      <h3>languages:</h3><br />
+      <h3>languages:</h3>
       <ul>
       {languages.map(language => 
         <li key={language}>{language}</li>)}
@@ -67,6 +70,35 @@ const Country = (props) => {
     </div>
   )
 }
+
+const Togglable = forwardRef((props, ref) => {
+  const [visible, setVisible] = useState(false)
+
+  const hideWhenVisible = { display: visible ? 'none' : '' }
+  const showWhenVisible = { display: visible ? '' : 'none' }
+
+  const toggleVisibility = () => {
+    setVisible(!visible)
+  }
+  useImperativeHandle(ref, () => {
+    return {
+      toggleVisibility
+    }
+  })
+
+  //console.log(props.children.props.country)
+  return (
+    <div>
+      <div style={hideWhenVisible}>
+        {props.children.props.country.name.common} <button onClick={toggleVisibility}>show</button>
+      </div>
+      <div style={showWhenVisible}>
+        {props.children}
+        <button onClick={toggleVisibility}>hide</button>
+      </div>
+    </div>
+  )
+})
 
 const App = () => {
   const [countries, setCountries] = useState([])
