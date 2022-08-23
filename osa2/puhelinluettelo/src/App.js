@@ -54,7 +54,7 @@ const Notification = ({ message }) => {
   if (message === null) {
     return null
   }
-  console.log(message.toLowerCase().includes("removed"))
+  console.log("includes removed", message.toLowerCase().includes("removed"))
   if (message.toLowerCase().includes("removed")) {
     return (
       <div className="failure">
@@ -94,19 +94,18 @@ const App = () => {
     let found = false
 
     event.preventDefault()
-    console.log('button clicked', event.target)
+    //console.log('button clicked', event.target)
     
     persons.forEach(person => {
       if (person.name === newName){
         found = true
-        console.log("found")
+        console.log("found same name")
       }
     })
 
     const personObject = {
       name: newName,
       number: newNumber,
-      //id: persons.length + 1,
     }
     
     if(found){
@@ -157,7 +156,7 @@ const App = () => {
   const removePerson = (id) => {
     const person = personsToShow.find(p => p.id === id)
     const result = window.confirm(`Delete ${person.name} ?`);
-    console.log(result)
+    console.log("remove result", result)
     if (result) {
       personService
         .remove(person.id)
