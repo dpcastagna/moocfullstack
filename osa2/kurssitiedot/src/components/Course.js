@@ -51,7 +51,7 @@ const Total = (props) => {
         //console.log('what is happening', sum, part)
         return sum + part.exercises
     }, 0)
-    console.log(total)
+    console.log("total exercises", total)
     return (
         <div>
         <p>
