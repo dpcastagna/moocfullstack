@@ -1,6 +1,6 @@
 Front
-https://dc-puhelinluettelo.herokuapp.com/
+https://dc-puhelinluettelo.fly.dev/
 
 
 Backend
-https://dc-puhelinluettelo.herokuapp.com/api/persons
+https://dc-puhelinluettelo.fly.dev/api/persons
