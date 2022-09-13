@@ -55,24 +55,24 @@ app.delete('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response, next) => {
+app.post('/api/persons', async (request, response, next) => {
   const body = request.body
+  const persons = await Person.find({})
   //person.id = Math.floor(Math.random() * 1000000000000000)
-  //console.log(person)
   if (body.name === '') {
-    return response.status(403).json({
+    return response.status(400).json({
       error: 'name missing'
     })
   } else if (body.number === '') {
-    return response.status(403).json({
+    return response.status(400).json({
       error: 'number missing'
     })
-  } /*else if(persons.filter(p => p.name === person.name).length > 0) {
+  } else if(persons.filter(p => p.name === body.name).length > 0) {
     //console.log(persons.filter(p => p.name === person.name).length)
-    return response.status(403).json({
+    return response.status(400).json({
       error: 'name must be unique'
     })
-  }*/
+  }
   const person = new Person({
     name: body.name,
     number: body.number,
