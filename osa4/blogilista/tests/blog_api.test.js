@@ -63,6 +63,12 @@ test('a blog can be deleted', async () => {
   expect(titles).not.toContain(blogToDelete.title)
 })
 
+test('blog id is named "id" not "_id"', async () => {
+  const blog = await helper.blogsInDb()
+  console.log(blog)
+  expect(blog[0].id).toBeDefined()
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
