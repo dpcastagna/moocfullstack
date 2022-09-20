@@ -19,7 +19,7 @@ test('correct amount of blogs are returned and blogs are returned as json', asyn
   expect(response.body).toHaveLength(helper.initialBlogs.length)
 })
 
-test('a valid blog can be added ', async () => {
+test('a valid blog can be added', async () => {
   const newBlog = {
     _id: "5a422bc61b54a67623412345",
     title: "Testi",
@@ -65,7 +65,7 @@ test('a blog can be deleted', async () => {
 
 test('blog id is named "id" not "_id"', async () => {
   const blog = await helper.blogsInDb()
-  console.log(blog)
+  //console.log(blog)
   expect(blog[0].id).toBeDefined()
 })
 
