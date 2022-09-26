@@ -12,8 +12,23 @@ beforeEach(async () => {
   //await User.insertMany(helper.initialBlogs)
 })
 
+test('username must be unique', async () => {
+  const newUser = {
+    username: "tuusi",
+    name: "tuusi",
+    password: "tuusi",
+  }
 
-test('an unvalid user with a valid password cannot be added', async () => {
+  await api.post('/api/users').send(newUser)
+
+  const response = await api.post('/api/users').send(newUser)
+  expect(response.status).toBe(400)
+  //console.log(response)
+  //expect('Content-Type', /application\/json/)
+  expect(response.body.error).toContain('unique')
+})
+
+test('an invalid username with a valid password cannot be added', async () => {
   const newUser = {
     username: "tu",
     name: "tuusi",
@@ -27,7 +42,7 @@ test('an unvalid user with a valid password cannot be added', async () => {
   expect(response.body.error).toContain('shorter')
 })
 
-test('a valid user with an unvalid password cannot be added', async () => {
+test('a valid username with an invalid password cannot be added', async () => {
   const newUser = {
     username: "tuusi",
     name: "tuusi",
