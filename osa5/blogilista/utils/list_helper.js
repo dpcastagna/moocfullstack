@@ -15,8 +15,60 @@ const totalLikes = (blogs) => {
 	return likes
 }
 
+const favoriteBlog = (blogs) => {
+	const sortedBlogs = blogs.sort((a, b) => {
+		return (a.likes > b.likes) ? -1: 1
+	})
+	//console.log(sortedBlogs)
+	return sortedBlogs[0]
+}
+
+const mostBlogs = (blogs) => {
+	const most = []
+	blogs.map(blog => {
+		//console.log(blog, most, most.filter(b => b.author === blog.author).length > 0)
+		if (most.filter(b => b.author === blog.author).length > 0) {
+			const res = most.find(b => b.author === blog.author)
+			//console.log(res)
+			res.blogs += 1
+		} else {
+			most.push({author: blog.author,
+				blogs : 1})
+		}
+	})
+	most.sort((a, b) => {
+		return (a.blogs > b.blogs) ?-1 : 1
+	})
+	//console.log(most)
+
+	return most[0]
+}
+
+const mostLikes = (blogs) => {
+	const most = []
+	blogs.map(blog => {
+		//console.log(blog, most, most.filter(b => b.author === blog.author).length > 0)
+		if (most.filter(b => b.author === blog.author).length > 0) {
+			const res = most.find(b => b.author === blog.author)
+			//console.log(res)
+			res.likes += blog.likes
+		} else {
+			most.push({author: blog.author,
+				likes : blog.likes})
+		}
+	})
+	most.sort((a, b) => {
+		return (a.likes > b.likes) ?-1 : 1
+	})
+	//console.log(most)
+
+	return most[0]
+}
 
 module.exports = {
   dummy,
-  totalLikes
+  totalLikes,
+	favoriteBlog,
+	mostBlogs,
+	mostLikes
 }
