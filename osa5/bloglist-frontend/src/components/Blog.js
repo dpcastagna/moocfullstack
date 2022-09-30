@@ -46,7 +46,7 @@ const Blog = ({ blog, user }) => {
     if(window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       //console.log("jee", blog.id)
       blogService
-        .remove(blog.id)
+        .remove(blog.id, user)
         .then(
           window.location.reload()
         )
