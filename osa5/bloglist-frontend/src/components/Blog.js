@@ -53,12 +53,18 @@ const Blog = ({ blog, user }) => {
     }
   }
 
+  if (!visible) {
+    return (
+      <div style={blogStyle}>
+
+        <div style={hideWhenVisible}>
+          {blog.title} {blog.author} <button onClick={toggleVisibility}>view</button>
+        </div>
+      </div>
+    )
+  }
   return(
     <div style={blogStyle}>
-
-      <div style={hideWhenVisible}>
-        {blog.title} {blog.author} <button onClick={toggleVisibility}>view</button>
-      </div>
       <div style={showWhenVisible}>
         {blog.title} {blog.author} <button onClick={toggleVisibility}>hide</button><br />
         {blog.url}<br />
@@ -69,7 +75,8 @@ const Blog = ({ blog, user }) => {
         </div>
       </div>
     </div>
-  )}
+  )
+}
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
