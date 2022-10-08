@@ -2,7 +2,7 @@ import { useState } from 'react'
 import blogService from '../services/blogs'
 import PropTypes from 'prop-types'
 
-const Blog = ({ blog, user }) => {
+const Blog = ({ blog, user, createLike }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -10,7 +10,7 @@ const Blog = ({ blog, user }) => {
     borderWidth: 1,
     marginBottom: 5
   }
-  console.log(blog)
+  console.log(typeof createLike)
   const [visible, setVisible] = useState(false)
   const [likes, setLikes] = useState(blog.likes)
   const hideWhenVisible = { display: visible ? 'none' : '' }
@@ -34,11 +34,9 @@ const Blog = ({ blog, user }) => {
       user: user._id,
     }
 
-    blogService
-      .update(blog.id, blogObject)
-      .then(
-        setLikes(blog.likes += 1)
-      )
+    createLike(blogObject)
+
+    setLikes(blog.likes += 1)
   }
 
   const removeBlog = (event) => {
@@ -57,7 +55,7 @@ const Blog = ({ blog, user }) => {
     return (
       <div style={blogStyle}>
 
-        <div style={hideWhenVisible}>
+        <div style={hideWhenVisible} className="hidden">
           {blog.title} {blog.author} <button onClick={toggleVisibility}>view</button>
         </div>
       </div>
@@ -65,7 +63,7 @@ const Blog = ({ blog, user }) => {
   }
   return(
     <div style={blogStyle}>
-      <div style={showWhenVisible}>
+      <div style={showWhenVisible} className="shown">
         {blog.title} {blog.author} <button onClick={toggleVisibility}>hide</button><br />
         {blog.url}<br />
         likes {blog.likes} <button onClick={likeSend}>like</button><br />
@@ -80,7 +78,8 @@ const Blog = ({ blog, user }) => {
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired
+  user: PropTypes.object.isRequired,
+  createLike: PropTypes.func.isRequired
 }
 
 export default Blog

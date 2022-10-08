@@ -70,6 +70,15 @@ const App = () => {
       })
   }
 
+  const addLike = (blogObject) => {
+
+    blogService
+      .update(blogObject.id, blogObject)
+      .then(
+        console.log('like added!')
+      )
+  }
+
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>
@@ -121,7 +130,7 @@ const App = () => {
       {blogs.sort((a, b) => {
         return (a.likes > b.likes) ? -1 : 1
       }).map(blog =>
-        <Blog key={blog.id} blog={blog} user={user} />
+        <Blog key={blog.id} blog={blog} user={user} createLike={addLike} />
       )}
     </div>
   )
