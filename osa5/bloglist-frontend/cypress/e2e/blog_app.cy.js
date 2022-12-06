@@ -30,4 +30,22 @@ describe('Blog app', function() {
       cy.get('.error').contains('wrong username or password')
     })
   })
+
+  describe('When logged in', function() {
+    beforeEach(function() {
+      cy.get('#username').type('testi')
+      cy.get('#password').type('testi')
+      cy.get('#login-button').click()
+    })
+
+    it('A blog can be created', function() {
+      cy.contains('new blog').click()
+
+      cy.get('#title').type('testiotsikko')
+      cy.get('#author').type('testikirjoittaja')
+      cy.get('#url').type('www.testi.fi')
+      cy.get('#create').click()
+      cy.contains('testiotsikko testikirjoittaja')
+    })
+  })
 })
