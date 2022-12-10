@@ -10,7 +10,7 @@ const Blog = ({ blog, user, createLike }) => {
     borderWidth: 1,
     marginBottom: 5
   }
-  console.log(typeof createLike)
+  //console.log(typeof createLike)
   const [visible, setVisible] = useState(false)
   const [likes, setLikes] = useState(blog.likes)
   const hideWhenVisible = { display: visible ? 'none' : '' }
@@ -31,9 +31,10 @@ const Blog = ({ blog, user, createLike }) => {
       author: blog.author,
       url: blog.url,
       likes: likes + 1,
-      user: user._id,
+      user: blog.user.id,
+      id: blog.id
     }
-
+    //console.log(blogObject, blog, user)
     createLike(blogObject)
 
     setLikes(blog.likes += 1)
@@ -53,23 +54,23 @@ const Blog = ({ blog, user, createLike }) => {
 
   if (!visible) {
     return (
-      <div style={blogStyle}>
+      <div className="blog" style={blogStyle}>
 
         <div style={hideWhenVisible} className="hidden">
-          {blog.title} {blog.author} <button onClick={toggleVisibility}>view</button>
+          {blog.title} {blog.author} <button id="viewButton" onClick={toggleVisibility}>view</button>
         </div>
       </div>
     )
   }
   return(
-    <div style={blogStyle}>
+    <div className="blog" style={blogStyle}>
       <div style={showWhenVisible} className="shown">
         {blog.title} {blog.author} <button onClick={toggleVisibility}>hide</button><br />
-        {blog.url}<br />
-        likes {blog.likes} <button onClick={likeSend}>like</button><br />
+        <span>{blog.url}</span><br />
+        likes {blog.likes} <button id="likeButton" onClick={likeSend}>like</button><br />
         {blog.user.name}
         <div style={showRemove}>
-          <button onClick={removeBlog}>remove</button>
+          <button id="removeButton" onClick={removeBlog}>remove</button>
         </div>
       </div>
     </div>
