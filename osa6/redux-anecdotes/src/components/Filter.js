@@ -9,7 +9,8 @@ const Filter = () => {
     event.preventDefault()
     // input-kentän arvo muuttujassa event.target.value
     const input = event.target.value
-    console.log(input)
+    //console.log(input)
+    dispatch(createFilter(input))
   }
   const style = {
     marginBottom: 10

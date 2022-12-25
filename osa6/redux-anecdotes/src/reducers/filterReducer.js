@@ -1,9 +1,9 @@
-import { useSelector } from 'react-redux'
+//import { useSelector } from 'react-redux'
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-  filter: null,
-  fAnecdotes: {}
+  filter: '',
+  //fAnecdotes: {}
 }
 
 const filterSlice = createSlice({
@@ -12,7 +12,7 @@ const filterSlice = createSlice({
   reducers: {
     createFilter(state, action) {
       const content = action.payload
-      state.filter = content
+      state.filter = content.toLowerCase()
     }
   },
 })
