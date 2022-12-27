@@ -9,9 +9,17 @@ const AnecdoteList = () => {
   const sortedAnecdotes = [...anecdotes].sort((a, b) => {
     return a.votes > b.votes ? -1 : 1
   })
+  
   const fAnecdotes = [...sortedAnecdotes].filter(anecdote => anecdote.content.includes(filter))
+  
   //console.log(fAnecdotes)
-
+  if (sortedAnecdotes.length === 0) {
+    return(
+    <div>
+      0 anecdotes
+    </div>
+    )
+  }
   return(
     <div>
       {fAnecdotes.map(anecdote =>
