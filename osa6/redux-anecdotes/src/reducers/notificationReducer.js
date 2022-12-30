@@ -11,20 +11,9 @@ const notificationSlice = createSlice({
     createNotification(state, action) {
       const content = action.payload
       state.message = content
-    }/*,
-    voteNotification(state, action) {
-      const id = action.payload
-      const anecdoteToChange = state.find(n => n.id === id)
-      const changedAnecdote = { 
-        ...anecdoteToChange, 
-        votes: anecdoteToChange.votes + 1
-      }
-      return state.map(anecdote =>
-        anecdote.id !== id ? anecdote : changedAnecdote 
-      )  
-    }*/
+    }
   },
 })
 
-export const { createNotification/*, voteNotification*/ } = notificationSlice.actions
+export const { createNotification } = notificationSlice.actions
 export default notificationSlice.reducer

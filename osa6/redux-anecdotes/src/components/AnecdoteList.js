@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { vote } from '../reducers/anecdoteReducer'
+import { createVote } from '../reducers/anecdoteReducer'
 import { createNotification } from '../reducers/notificationReducer'
 
 const AnecdoteList = () => {
@@ -13,10 +13,10 @@ const AnecdoteList = () => {
   const fAnecdotes = [...sortedAnecdotes].filter(anecdote => anecdote.content.includes(filter))
   
   //console.log(fAnecdotes)
-  if (sortedAnecdotes.length === 0) {
+  if (fAnecdotes.length === 0) {
     return(
     <div>
-      0 anecdotes
+      0 anecdotes found that match the filter.
     </div>
     )
   }
@@ -29,7 +29,7 @@ const AnecdoteList = () => {
           </div>
           <div>
             has {anecdote.votes}
-            <button onClick={() => dispatch(vote(anecdote.id),
+            <button onClick={() => dispatch(createVote(anecdote.id),
               dispatch(createNotification(`you voted '${anecdote.content}'`)))}>vote</button>
           </div>
         </div>
