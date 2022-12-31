@@ -11,11 +11,11 @@ const Notification = () => {
     marginBottom: 10
   }
 
-  if (notification !== null) {
+  /*if (notification !== null) {
     setTimeout(() => {
       dispatch(createNotification(null))
     }, 5000)
-  }
+  }*/
 
   if (notification === null) {
     return null
