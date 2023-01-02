@@ -1,14 +1,12 @@
 import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { connect } from 'react-redux'
 import { createFilter, createFiltered } from '../reducers/filterReducer'
 
-const Filter = () => {
-  const dispatch = useDispatch()
-  const anecdotes = useSelector(state => state.anecdotes)
+const Filter = (props) => {
   
   useEffect(() => {
-    dispatch(createFiltered(anecdotes))
-  }, [dispatch, anecdotes])
+    props.createFiltered(props.anecdotes)
+  }, [props, props.anecdotes])
   
 
   const handleChange = (event) => {
@@ -16,8 +14,8 @@ const Filter = () => {
     // input-kentän arvo muuttujassa event.target.value
     const input = event.target.value
     //console.log(input)
-    dispatch(createFilter(input))
-    dispatch(createFiltered(anecdotes))
+    props.createFilter(input)
+    props.createFiltered(props.anecdotes)
   }
   const style = {
     marginBottom: 10
@@ -30,4 +28,20 @@ const Filter = () => {
   )
 }
 
-export default Filter
+const mapStateToProps = (state) => {
+  return {
+    anecdotes: state.anecdotes
+  }
+}
+
+const mapDispatchToProps = {
+  createFilter,
+  createFiltered,
+}
+
+const ConnectedFilter = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Filter)
+
+export default ConnectedFilter
