@@ -1,0 +1,101 @@
+{
+  "notes": [
+    {
+      "content": "custom-hooks are great",
+      "id": 1
+    },
+    {
+      "content": "the best featrure ever <3",
+      "id": 2
+    },
+    {
+      "content": "jee",
+      "id": 3
+    },
+    {
+      "content": "jee",
+      "id": 4
+    },
+    {
+      "content": "jee",
+      "id": 5
+    },
+    {
+      "content": "joooo",
+      "id": 6
+    },
+    {
+      "content": "jaaa",
+      "id": 7
+    },
+    {
+      "content": "jaaa",
+      "id": 8
+    },
+    {
+      "content": "jee",
+      "id": 9
+    },
+    {
+      "content": "jee",
+      "id": 10
+    }
+  ],
+  "persons": [
+    {
+      "name": "mluukkai",
+      "number": "040-5483923",
+      "id": 1
+    },
+    {
+      "name": "kaltsoon",
+      "number": "045-2323456",
+      "id": 2
+    },
+    {
+      "name": "jesse",
+      "number": "1234567",
+      "id": 3
+    },
+    {
+      "name": "jusse",
+      "number": "5432",
+      "id": 4
+    },
+    {
+      "name": "jasse",
+      "number": "9876",
+      "id": 5
+    },
+    {
+      "name": "jasse",
+      "number": "9876",
+      "id": 6
+    },
+    {
+      "name": "jasse",
+      "number": "98763",
+      "id": 7
+    },
+    {
+      "name": "jasse",
+      "number": "98763",
+      "id": 8
+    },
+    {
+      "name": "jasse",
+      "number": "98763",
+      "id": 9
+    },
+    {
+      "name": "jessi",
+      "number": "98763",
+      "id": 10
+    },
+    {
+      "name": "jessi",
+      "number": "98763",
+      "id": 11
+    }
+  ]
+}
