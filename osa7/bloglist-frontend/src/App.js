@@ -131,25 +131,17 @@ const App = () => {
         <Menu user={user.name} logout={handleLogout} />
         <h2>blog app</h2>
         <Notification message={errorMessage} class="success" />
-        <form onSubmit={handleLogout}>
-          <p>
-            {user.name} logged in <button type="submit">logout</button>
-          </p>
-        </form>
         <Togglable buttonLabel="new blog" ref={blogFormRef}>
           <BlogForm createBlog={addBlog} />
         </Togglable>
-        {blogs
-          .sort((a, b) => {
-            return a.likes > b.likes ? -1 : 1
-          })
-          .map((blog) => (
-            <Blog key={blog.id} blog={blog} user={user} createLike={addLike} />
-          ))}
         <Routes>
           <Route
             path="/"
             element={<BlogList user={user} createLike={addLike} />}
+          />
+          <Route
+            path="/blogs/:id"
+            element={<Blog user={user} blogs={blogs} createLike={addLike} />}
           />
         </Routes>
       </Router>

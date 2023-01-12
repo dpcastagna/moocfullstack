@@ -1,8 +1,9 @@
 import { useState } from 'react'
+import { useParams } from 'react-router-dom'
 import blogService from '../services/blogs'
 import PropTypes from 'prop-types'
 
-const Blog = ({ blog, user, createLike }) => {
+const Blog = ({ user, createLike, blogs }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -10,18 +11,22 @@ const Blog = ({ blog, user, createLike }) => {
     borderWidth: 1,
     marginBottom: 5,
   }
-  //console.log(typeof createLike)
-  const [visible, setVisible] = useState(false)
-  const [likes, setLikes] = useState(blog.likes)
-  const hideWhenVisible = { display: visible ? 'none' : '' }
-  const showWhenVisible = { display: visible ? '' : 'none' }
-  const sameUser = blog.user.name === user.name
+
+  const id = useParams().id
+  const [blog] = useState(blogs.find((blog) => blog.id === id))
+  //const [visible, setVisible] = useState(false)
+  const [likes, setLikes] = useState(null)
+  //const hideWhenVisible = { display: visible ? 'none' : '' }
+  //const showWhenVisible = { display: visible ? '' : 'none' }
+  const [sameUser] = useState(blog.user.name.includes(user.username)) //blog.user.name === user.name
   const showRemove = { display: sameUser ? '' : 'none' }
   //console.log("nimi sama", sameUser, visible)
 
-  const toggleVisibility = () => {
+  console.log('blog1', id, blog, blogs, user)
+  console.log(blog.user.name.includes(user.username))
+  /*const toggleVisibility = () => {
     setVisible(!visible)
-  }
+  }*/
 
   const likeSend = (event) => {
     event.preventDefault()
@@ -34,9 +39,8 @@ const Blog = ({ blog, user, createLike }) => {
       user: blog.user.id,
       id: blog.id,
     }
-    //console.log(blogObject, blog, user)
-    createLike(blogObject)
 
+    createLike(blogObject)
     setLikes((blog.likes += 1))
   }
 
@@ -48,6 +52,14 @@ const Blog = ({ blog, user, createLike }) => {
     }
   }
 
+  /*if (blog === null || blog === undefined) {
+    setBlog(blogs.find((blog) => blog.id === id))
+    setSameUser(true)
+    return null
+  }
+  /*if (sameUser === false) {
+    setSameUser(blog.user.name.includes(user.username))
+  }
   if (!visible) {
     return (
       <div className="blog" style={blogStyle}>
@@ -59,33 +71,31 @@ const Blog = ({ blog, user, createLike }) => {
         </div>
       </div>
     )
-  }
+  }*/
   return (
     <div className="blog" style={blogStyle}>
-      <div style={showWhenVisible} className="shown">
-        {blog.title} {blog.author}{' '}
-        <button onClick={toggleVisibility}>hide</button>
-        <br />
-        <span>{blog.url}</span>
-        <br />
-        likes {blog.likes}{' '}
-        <button id="likeButton" onClick={likeSend}>
-          like
+      <h2>
+        {blog.title} {blog.author}
+      </h2>
+      <a href={blog.url}>{blog.url}</a>
+      <br />
+      likes {blog.likes}{' '}
+      <button id="likeButton" onClick={likeSend}>
+        like
+      </button>
+      <br />
+      added by {blog.user.name}
+      <div style={showRemove}>
+        <button id="removeButton" onClick={removeBlog}>
+          remove
         </button>
-        <br />
-        {blog.user.name}
-        <div style={showRemove}>
-          <button id="removeButton" onClick={removeBlog}>
-            remove
-          </button>
-        </div>
       </div>
     </div>
   )
 }
 
 Blog.propTypes = {
-  blog: PropTypes.object.isRequired,
+  blogs: PropTypes.array.isRequired,
   user: PropTypes.object.isRequired,
   createLike: PropTypes.func.isRequired,
 }
