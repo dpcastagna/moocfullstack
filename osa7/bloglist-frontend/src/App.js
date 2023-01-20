@@ -5,6 +5,7 @@ import Menu from './components/Menu'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
+import { Users, User } from './components/Users'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import {
@@ -143,6 +144,11 @@ const App = () => {
             path="/blogs/:id"
             element={<Blog user={user} blogs={blogs} createLike={addLike} />}
           />
+          <Route
+            path="/users"
+            element={<Users user={user} blogs={blogs} createLike={addLike} />}
+          />
+          <Route path="/users/:id" element={<User />} />
         </Routes>
       </Router>
     </div>

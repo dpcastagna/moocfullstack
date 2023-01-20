@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import blogService from '../services/blogs'
 import PropTypes from 'prop-types'
 
-const Blog = ({ user, createLike, blogs }) => {
+const Blog = ({ user, createLike /*blogs*/ }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -13,17 +13,24 @@ const Blog = ({ user, createLike, blogs }) => {
   }
 
   const id = useParams().id
-  const [blog] = useState(blogs.find((blog) => blog.id === id))
+  const [blog, setBlog] = useState(null) //blogs.find((blog) => blog.id === id))
   //const [visible, setVisible] = useState(false)
   const [likes, setLikes] = useState(null)
   //const hideWhenVisible = { display: visible ? 'none' : '' }
   //const showWhenVisible = { display: visible ? '' : 'none' }
-  const [sameUser] = useState(blog.user.name.includes(user.username)) //blog.user.name === user.name
+  const [sameUser, setSameUser] = useState(1) //blog.user.name.includes(user.username)) //blog.user.name === user.name
   const showRemove = { display: sameUser ? '' : 'none' }
   //console.log("nimi sama", sameUser, visible)
 
-  console.log('blog1', id, blog, blogs, user)
-  console.log(blog.user.name.includes(user.username))
+  useEffect(() => {
+    blogService.getAll().then((blogs) => {
+      setBlog(blogs.find((blog) => blog.id === id))
+    })
+    //setSameUser(blog.user.name.includes(user.username))
+  }, [])
+
+  /*console.log('blog1', id, blog, blogs, user, sameUser)
+  /*console.log(blog.user.name.includes(user.username))
   /*const toggleVisibility = () => {
     setVisible(!visible)
   }*/
@@ -51,10 +58,11 @@ const Blog = ({ user, createLike, blogs }) => {
       blogService.remove(blog.id, user).then(window.location.reload())
     }
   }
-
-  /*if (blog === null || blog === undefined) {
-    setBlog(blogs.find((blog) => blog.id === id))
-    setSameUser(true)
+  if (!blog) {
+    return null
+  }
+  if (sameUser === 1) {
+    setSameUser(blog.user.name.includes(user.username))
     return null
   }
   /*if (sameUser === false) {
@@ -95,7 +103,7 @@ const Blog = ({ user, createLike, blogs }) => {
 }
 
 Blog.propTypes = {
-  blogs: PropTypes.array.isRequired,
+  blogs: PropTypes.array,
   user: PropTypes.object.isRequired,
   createLike: PropTypes.func.isRequired,
 }

@@ -3,17 +3,15 @@ import { Link } from 'react-router-dom'
 const Menu = (props) => {
   const padding = {
     paddingRight: 5,
+    backgroundColor: 'lightgrey',
   }
   return (
-    <div>
+    <div style={padding}>
       <Link style={padding} to="/">
         blogs
       </Link>
-      <Link style={padding} to="/create">
-        create new
-      </Link>
-      <Link style={padding} to="/about">
-        about
+      <Link style={padding} to="/users">
+        users
       </Link>
       {props.user} has logged in <button onClick={props.logout}>logout</button>
     </div>
