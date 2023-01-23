@@ -16,6 +16,7 @@ import {
   //useParams,
   //useNavigate,
 } from 'react-router-dom'
+import { Form, Button, Alert } from 'react-bootstrap'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -23,6 +24,7 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
@@ -49,6 +51,10 @@ const App = () => {
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
       blogService.setToken(user.token)
       setUser(user)
+      setMessage(`welcome ${user.name}`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 10000)
       setUsername('')
       setPassword('')
     } catch (exception) {
@@ -62,7 +68,8 @@ const App = () => {
   const handleLogout = (event) => {
     event.preventDefault()
     window.localStorage.removeItem('loggedBlogappUser')
-    window.location.reload() //reloads page after logout button press
+    //window.location.reload() //reloads page after logout button press
+    setUser(null)
   }
 
   const addBlog = (blogObject) => {
@@ -87,7 +94,7 @@ const App = () => {
   }
 
   const loginForm = () => (
-    <form onSubmit={handleLogin}>
+    /*<form onSubmit={handleLogin}>
       <div>
         username
         <input
@@ -111,14 +118,32 @@ const App = () => {
       <button id="login-button" type="submit">
         login
       </button>
-    </form>
+    </form>*/
+    <Form onSubmit={handleLogin}>
+      <Form.Group>
+        <Form.Label>username:</Form.Label>
+        <Form.Control
+          type="text"
+          name="username"
+          onChange={({ target }) => setUsername(target.value)}
+        />
+        <Form.Label>password:</Form.Label>
+        <Form.Control
+          type="password"
+          onChange={({ target }) => setPassword(target.value)}
+        />
+        <Button variant="primary" type="submit">
+          login
+        </Button>
+      </Form.Group>
+    </Form>
   )
 
   const blogFormRef = useRef()
 
   if (user === null) {
     return (
-      <div>
+      <div className="container">
         <h2>login to application</h2>
         <Notification message={errorMessage} class="error" />
         {loginForm()}
@@ -127,7 +152,8 @@ const App = () => {
   }
 
   return (
-    <div>
+    <div className="container">
+      {message && <Alert variant="success"> {message} </Alert>}
       <Router>
         <Menu user={user.name} logout={handleLogout} />
         <h2>blog app</h2>

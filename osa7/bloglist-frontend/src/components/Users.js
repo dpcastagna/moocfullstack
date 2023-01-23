@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link /*Routes, Route*/, useParams } from 'react-router-dom'
 //import Blog from '../components/Blog'
 import userService from '../services/users'
+import Table from 'react-bootstrap/Table'
 
 const User = () => {
   const id = useParams().id
@@ -58,7 +59,7 @@ const Users = () => {
   return (
     <div>
       <h2>Users</h2>
-      <table>
+      <Table striped>
         <thead>
           <tr>
             <th />
@@ -81,7 +82,7 @@ const Users = () => {
               </tr>
             ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   )
 }
