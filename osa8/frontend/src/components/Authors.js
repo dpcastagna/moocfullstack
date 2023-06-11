@@ -1,4 +1,6 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql, useQuery, useMutation } from '@apollo/client'
+import { useState } from 'react'
+import Select from 'react-select'
 
 const ALL_AUTHORS = gql`
   query {
@@ -9,21 +11,54 @@ const ALL_AUTHORS = gql`
     }
   }
 `
+const UPDATE_AUTHOR = gql`
+  mutation updateAuthor($selAuthor: String!, $numBirthYear: Int!) {
+    editAuthor  (
+      name: $selAuthor,
+      setBornTo: $numBirthYear
+    ) {
+      name,
+      born
+    }
+  }
+`
 
 const Authors = (props) => {
-  const result = useQuery(ALL_AUTHORS)
+  const [selectedAuthor, setSelectedAuthor] = useState(null)
+  const [birthYear, setBirthYear] = useState('')
+  const result = useQuery(ALL_AUTHORS, {
+    pollInterval: 2000  
+  })
 
-  if (result.loading)  {
-    return <div>loading...</div>
-  }
+  const [ updateAuthor ] = useMutation(UPDATE_AUTHOR)
 
   if (!props.show) {
     return null
   }
 
+  if (result.loading)  {
+    return <div>loading...</div>
+  }
+
   // console.log(result.data?.allAuthors)
 
   const authors = result.data.allAuthors
+  const authorNames = authors.map((a) => {return { value: a.name, label: a.name }})
+  // console.log(result.data?.allAuthors, authorNames)
+
+  const submit = async (event) => {
+    event.preventDefault()
+
+    console.log('updated author...')
+    // console.log(selectedAuthor)
+    const selAuthor = selectedAuthor.value
+    const numBirthYear = Number(birthYear)
+
+    updateAuthor({ variables: { selAuthor, numBirthYear } })
+
+    setSelectedAuthor(null)
+    setBirthYear('')
+  }
 
   return (
     <div>
@@ -44,6 +79,19 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
+      <h3>Set birthyear</h3>
+      <Select
+        defaultValue={selectedAuthor}
+        onChange={setSelectedAuthor}
+        options={authorNames}
+      />
+      <input
+        value={birthYear}
+        onChange={({ target }) => setBirthYear(target.value)}
+      /><br />
+      <button onClick={submit} type="button">
+        update author
+      </button>
     </div>
   )
 }

@@ -11,17 +11,19 @@ const ALL_BOOKS = gql`
 `
 
 const Books = (props) => {
-  const result = useQuery(ALL_BOOKS)
-
-  if (result.loading)  {
-    return <div>loading...</div>
-  }
+  const result = useQuery(ALL_BOOKS, {
+    pollInterval: 2000  
+  })
 
   if (!props.show) {
     return null
   }
 
-  console.log(result.data?.allBooks)
+  if (result.loading)  {
+    return <div>loading...</div>
+  }
+
+  // console.log(result.data?.allBooks)
 
   const books = result.data?.allBooks
 
