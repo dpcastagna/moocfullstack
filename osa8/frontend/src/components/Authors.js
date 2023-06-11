@@ -56,7 +56,7 @@ const Authors = (props) => {
 
     updateAuthor({ variables: { selAuthor, numBirthYear } })
 
-    setSelectedAuthor(null)
+    // setSelectedAuthor(null)
     setBirthYear('')
   }
 
