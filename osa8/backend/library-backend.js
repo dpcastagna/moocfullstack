@@ -121,6 +121,7 @@ const typeDefs = `
     name: String!
     bookCount: Int!
     born: Int
+    id: ID!
   }
 
   type Book {
@@ -157,43 +158,45 @@ const resolvers = {
     bookCount: async () => Book.collection.countDocuments(),//books.length,
     authorCount: async () => Author.collection.countDocuments(),//authors.length,
     allBooks: async (root, args) => {
-      console.log("jee", args)
-      if (args && args.length > 0) {
+      console.log("jee", root, args)
+      if (args) {
         console.log("argsit on")
-        let filteredBooks = args.author ? Book.find({ name: args.author }) : Book.find({})
+        let filteredBooks = args.author ? Book.find({ author: args.author }) : Book.find({})
         filteredBooks = args.genre ? filteredBooks.filter(b => b.genres.includes(args.genre)) : filteredBooks
         return filteredBooks
       }
-      console.log(await Book.find({}))
+      // console.log(await Book.find({}))
       return Book.find({})
     },
     allAuthors: async () => Author.find({}) //authors,
   },
   Author: {
-    bookCount: async (root) => Book.find({ author: root.name }),//books.filter(b => b.author === root.name).length,
+    bookCount: async (root) => await Book.count({ author: root.id }),//books.filter(b => b.author === root.name).length,
     born: (root) => root.born
   },
   Book: {
     author: async (root) => {
-      // console.log(root.author._id.toString())
-      // const author = Author.find({id: root.author._id.toString()})
-      // console.log(author)
-      return {
-        name: root.name,
-        bookCount: root.bookCount,
-        born: root.born
-      }
+      // console.log("Bookissa: ", root.author._id.toString())
+      const author = await Author.findOne({_id: root.author._id})
+      // console.log("Bookin author: ", author)
+      return author
+      // {
+      //   name: author.name,
+      //   bookCount: author.bookCount,
+      //   born: author.born
+      // }
     }
   },
   Mutation: {
     addBook: async (root, args) => {
       console.log(args)
       let author = await Author.findOne({name: args.author})//authors.filter(a => a.name === args.author)
-      console.log(author)
+      // console.log(author)
       if (!author) {
         console.log("ei löytynyt authoria")
         const newAuthor = new Author({ name: args.author, born: null })
-        newAuthor.save()
+        console.log(newAuthor.isNew, newAuthor)
+        await newAuthor.save()
         author = newAuthor
       }
 
@@ -204,18 +207,20 @@ const resolvers = {
       // console.log(books)
       
       
-      // console.log(books, authors, newAuthor, args)
-      return book.save()
+      console.log("uudessa kirjassa: ", book, author, args)
+      return await book.save()
     },
     editAuthor: async (root, args) => {
       const author = await Author.findOne({ name: args.name })//authors.find(a => a.name === args.name)
       if (!author) {
         return null
       }
-
-      const updatedAuthor = { ...args, born: args.setBornTo }
-      authors = authors.map(a => a.name === args.name ? updatedAuthor : a)
-      return updatedAuthor
+      console.log(author, args)
+      author.born = args.setBornTo
+      return author.save()
+      // const updatedAuthor = { ...args, born: args.setBornTo }
+      // authors = authors.map(a => a.name === args.name ? updatedAuthor : a)
+      // return updatedAuthor
     }
   }
 }
