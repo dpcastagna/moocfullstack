@@ -1,5 +1,6 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
+const { GraphQLError } = require('graphql')
 const { v1: uuid } = require('uuid')
 
 const mongoose = require('mongoose')
@@ -112,10 +113,6 @@ let books = [
   },
 ]
 
-/*
-  you can remove the placeholder query once your first own has been implemented 
-*/
-
 const typeDefs = `
   type Author {
     name: String!
@@ -160,8 +157,12 @@ const resolvers = {
     allBooks: async (root, args) => {
       console.log("jee", root, args)
       if (args) {
-        console.log("argsit on")
-        let filteredBooks = args.author ? Book.find({ author: args.author }) : Book.find({})
+        const author = await Author.findOne({ name: args.author })
+        console.log("argsit löytyi", author)
+        let filteredBooks = args.author 
+        ? await Book.find({ author: author._id }) 
+        : await Book.find({})
+        console.log(filteredBooks)
         filteredBooks = args.genre ? filteredBooks.filter(b => b.genres.includes(args.genre)) : filteredBooks
         return filteredBooks
       }
@@ -196,26 +197,42 @@ const resolvers = {
         console.log("ei löytynyt authoria")
         const newAuthor = new Author({ name: args.author, born: null })
         console.log(newAuthor.isNew, newAuthor)
-        await newAuthor.save()
+        try {
+          await newAuthor.save()
+        } catch (error) {
+          throw new GraphQLError('Saving author failed', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.author,
+              error
+            }
+          })
+        }
         author = newAuthor
       }
 
       const book = new Book({ ...args, author: author })
-
-      // return book.save()
-      // books = Book.find({})//books.concat(book)
-      // console.log(books)
       
-      
-      console.log("uudessa kirjassa: ", book, author, args)
-      return await book.save()
+      // console.log("uudessa kirjassa: ", book, author, args)
+      try {
+        await book.save()
+      } catch (error) {
+        throw new GraphQLError('Saving book failed', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.title,
+            error
+          }
+        })
+      }
+      return book
     },
     editAuthor: async (root, args) => {
       const author = await Author.findOne({ name: args.name })//authors.find(a => a.name === args.name)
       if (!author) {
         return null
       }
-      console.log(author, args)
+      // console.log(author, args)
       author.born = args.setBornTo
       return author.save()
       // const updatedAuthor = { ...args, born: args.setBornTo }
