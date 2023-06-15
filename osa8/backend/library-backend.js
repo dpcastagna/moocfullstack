@@ -5,8 +5,11 @@ const { v1: uuid } = require('uuid')
 
 const mongoose = require('mongoose')
 mongoose.set('strictQuery', false)
+const jwt = require('jsonwebtoken')
+
 const Author = require('./models/author')
 const Book = require('./models/book')
+const User = require('./models/user')
 
 require('dotenv').config()
 const MONGODB_URI = process.env.MONGODB_URI
@@ -129,11 +132,22 @@ const typeDefs = `
     id: ID!
   }
 
+  type User {
+    username: String!
+    favoriteGenre: String!
+    id: ID!
+  }
+
+  type Token {
+    value: String!
+  }
+
   type Query {
     bookCount: Int!
     authorCount: Int!
     allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
+    me: User
   }
 
   type Mutation {
@@ -147,6 +161,14 @@ const typeDefs = `
       name: String!
       setBornTo: Int!
     ) : Author
+    createUser(
+      username: String!
+      favoriteGenre: String!
+    ): User
+    login(
+      username: String!
+      password: String!
+    ): Token
   }
 `
 
@@ -169,7 +191,8 @@ const resolvers = {
       // console.log(await Book.find({}))
       return Book.find({})
     },
-    allAuthors: async () => Author.find({}) //authors,
+    allAuthors: async () => Author.find({}), //authors,
+    me: async () => User.find({}), //TODO
   },
   Author: {
     bookCount: async (root) => await Book.count({ author: root.id }),//books.filter(b => b.author === root.name).length,
@@ -234,11 +257,54 @@ const resolvers = {
       }
       // console.log(author, args)
       author.born = args.setBornTo
-      return author.save()
+      try {
+        author.save()
+      } catch (error) {
+        throw new GraphQLError('Editing author failed', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.title,
+            error
+          }
+        })
+      }
+      return author
       // const updatedAuthor = { ...args, born: args.setBornTo }
       // authors = authors.map(a => a.name === args.name ? updatedAuthor : a)
       // return updatedAuthor
-    }
+    },
+    createUser: async (root, args) => {
+      const user = new User({ username: args.username, favoriteGenre: args.favoriteGenre })
+  
+      return user.save()
+        .catch(error => {
+          throw new GraphQLError('Creating the user failed', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.name,
+              error
+            }
+          })
+        })
+    },
+    login: async (root, args) => {
+      const user = await User.findOne({ username: args.username })
+  
+      if ( !user || args.password !== 'secret' ) {
+        throw new GraphQLError('wrong credentials', {
+          extensions: {
+            code: 'BAD_USER_INPUT'
+          }
+        })        
+      }
+  
+      const userForToken = {
+        username: user.username,
+        id: user._id,
+      }
+  
+      return { value: jwt.sign(userForToken, process.env.JWT_SECRET) }
+    },
   }
 }
 
