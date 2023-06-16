@@ -192,7 +192,10 @@ const resolvers = {
       return Book.find({})
     },
     allAuthors: async () => Author.find({}), //authors,
-    me: async () => User.find({}), //TODO
+    // me: async () => User.find({}), //TODO
+    me: (root, args, context) => {
+      return context.currentUser
+    }
   },
   Author: {
     bookCount: async (root) => await Book.count({ author: root.id }),//books.filter(b => b.author === root.name).length,
@@ -212,7 +215,17 @@ const resolvers = {
     }
   },
   Mutation: {
-    addBook: async (root, args) => {
+    addBook: async (root, args, context) => {
+      const user = context.currentUser
+      console.log('addBook user: ', user)
+      if (!user) {
+        throw new GraphQLError('Adding book failed, please login.', {
+          extensions: {
+            code: 'BAD_USER_INPUT'
+          }
+        })  
+      }
+
       console.log(args)
       let author = await Author.findOne({name: args.author})//authors.filter(a => a.name === args.author)
       // console.log(author)
@@ -250,7 +263,17 @@ const resolvers = {
       }
       return book
     },
-    editAuthor: async (root, args) => {
+    editAuthor: async (root, args, context) => {
+      const user = context.currentUser
+      console.log('editAuthor user: ', user)
+      if (!user) {
+        throw new GraphQLError('Editing author failed, please login.', {
+          extensions: {
+            code: 'BAD_USER_INPUT'
+          }
+        })  
+      }
+
       const author = await Author.findOne({ name: args.name })//authors.find(a => a.name === args.name)
       if (!author) {
         return null
@@ -315,6 +338,17 @@ const server = new ApolloServer({
 
 startStandaloneServer(server, {
   listen: { port: 4000 },
+  context: async ({ req, res }) => {
+    const auth = req ? req.headers.authorization : null
+    if (auth && auth.startsWith('Bearer ')) {
+      const decodedToken = jwt.verify(
+        auth.substring(7), process.env.JWT_SECRET
+      )
+      const currentUser = await User
+        .findById(decodedToken.id)//.populate('friends')
+      return { currentUser }
+    }
+  },
 }).then(({ url }) => {
   console.log(`Server ready at ${url}`)
 })
