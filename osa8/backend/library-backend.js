@@ -177,14 +177,14 @@ const resolvers = {
     bookCount: async () => Book.collection.countDocuments(),//books.length,
     authorCount: async () => Author.collection.countDocuments(),//authors.length,
     allBooks: async (root, args) => {
-      console.log("jee", root, args)
-      if (args) {
+      // console.log("jee", root, args)
+      if (args &&args.length > 0) {
         const author = await Author.findOne({ name: args.author })
         console.log("argsit löytyi", author)
         let filteredBooks = args.author 
         ? await Book.find({ author: author._id }) 
         : await Book.find({})
-        console.log(filteredBooks)
+        // console.log(filteredBooks)
         filteredBooks = args.genre ? filteredBooks.filter(b => b.genres.includes(args.genre)) : filteredBooks
         return filteredBooks
       }
@@ -216,6 +216,7 @@ const resolvers = {
   },
   Mutation: {
     addBook: async (root, args, context) => {
+      console.log(args)
       const user = context.currentUser
       console.log('addBook user: ', user)
       if (!user) {
@@ -249,7 +250,7 @@ const resolvers = {
 
       const book = new Book({ ...args, author: author })
       
-      // console.log("uudessa kirjassa: ", book, author, args)
+      console.log("uudessa kirjassa: ", book, author, args)
       try {
         await book.save()
       } catch (error) {
