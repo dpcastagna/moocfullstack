@@ -177,8 +177,8 @@ const resolvers = {
     bookCount: async () => Book.collection.countDocuments(),//books.length,
     authorCount: async () => Author.collection.countDocuments(),//authors.length,
     allBooks: async (root, args) => {
-      // console.log("jee", root, args)
-      if (args &&args.length > 0) {
+      console.log("allBooks: ", args)
+      if (args.author || args.genre) {
         const author = await Author.findOne({ name: args.author })
         console.log("argsit löytyi", author)
         let filteredBooks = args.author 

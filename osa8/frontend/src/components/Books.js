@@ -21,6 +21,7 @@ const Books = (props) => {
   const result = useQuery(ALL_BOOKS, {
     pollInterval: 2000  
   })
+  const genres = []
 
   if (!props.show) {
     return null
@@ -33,7 +34,8 @@ const Books = (props) => {
   // console.log(result.data?.allBooks)
 
   const books = result.data?.allBooks
-
+  
+  console.log(genres)
   return (
     <div>
       <h2>books</h2>
@@ -51,7 +53,8 @@ const Books = (props) => {
               <td>{b.author.name}</td>
               <td>{b.published}</td>
             </tr>
-          ))}
+            )
+          )}
         </tbody>
       </table>
     </div>
