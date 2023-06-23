@@ -59,6 +59,7 @@ const App = () => {
     localStorage.clear()
     client.resetStore()
     setPage('authors')
+    window.location.reload()
   }
 
   return (
@@ -68,7 +69,7 @@ const App = () => {
         <button onClick={() => setPage('authors')}>authors</button>
         <button onClick={() => setPage('books')}>books</button>
         <button onClick={() => setPage('add')}>add book</button>
-        <button onClick={() => setPage('recommended')}>recommended</button>
+        <button onClick={() => setPage('recommended')}>recommend</button>
         <button onClick={logout}>logout</button>
       </div>
 
