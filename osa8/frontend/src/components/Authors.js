@@ -43,8 +43,9 @@ const Authors = (props) => {
 
   // console.log(result.data?.allAuthors)
 
-  const authors = result.data.allAuthors
-  const authorNames = authors.map((a) => {return { value: a.name, label: a.name }})
+  const authors = result.data?.allAuthors
+  // console.log(authors, result)
+  const authorNames = authors?.map((a) => {return { value: a.name, label: a.name }})
   // console.log(result.data?.allAuthors, authorNames)
 
   const submit = async (event) => {
