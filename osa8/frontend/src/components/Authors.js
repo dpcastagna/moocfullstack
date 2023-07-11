@@ -1,35 +1,12 @@
-import { useQuery, useMutation } from '@apollo/client'
+import { /* useQuery, */ useMutation } from '@apollo/client'
 import { useState } from 'react'
 import Select from 'react-select'
-import { ALL_AUTHORS, UPDATE_AUTHOR } from '../queries'
-
-// const ALL_AUTHORS = gql`
-//   query {
-//     allAuthors  {
-//       name
-//       born
-//       bookCount
-//     }
-//   }
-// `
-// const UPDATE_AUTHOR = gql`
-//   mutation updateAuthor($selAuthor: String!, $numBirthYear: Int!) {
-//     editAuthor  (
-//       name: $selAuthor,
-//       setBornTo: $numBirthYear
-//     ) {
-//       name,
-//       born
-//     }
-//   }
-// `
+import { /* ALL_AUTHORS, */ UPDATE_AUTHOR } from '../queries'
 
 const Authors = (props) => {
   const [selectedAuthor, setSelectedAuthor] = useState(null)
   const [birthYear, setBirthYear] = useState('')
-  const result = useQuery(ALL_AUTHORS, {
-    pollInterval: 2000  
-  })
+  const allAuthors = props.authors
 
   const [ updateAuthor ] = useMutation(UPDATE_AUTHOR)
 
@@ -37,13 +14,13 @@ const Authors = (props) => {
     return null
   }
 
-  if (result.loading)  {
+  if (allAuthors.loading)  {
     return <div>loading...</div>
   }
 
   // console.log(result.data?.allAuthors)
 
-  const authors = result.data?.allAuthors
+  const authors = allAuthors.data?.allAuthors
   // console.log(authors, result)
   const authorNames = authors?.map((a) => {return { value: a.name, label: a.name }})
   // console.log(result.data?.allAuthors, authorNames)

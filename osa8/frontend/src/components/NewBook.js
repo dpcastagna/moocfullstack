@@ -2,19 +2,7 @@ import { useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { ALL_BOOKS, CREATE_BOOK } from '../queries'
 
-// const CREATE_BOOK = gql`
-//   mutation createBook($title: String!, $author: String!, $pubYear: Int!, $genres: [String!]!) {
-//     addBook  (
-//       title: $title,
-//       author: $author,
-//       published: $pubYear,
-//       genres: $genres
-//     ) {
-//       title,
-//       author
-//     }
-//   }
-// `
+import { updateCache } from '../App'
 
 const NewBook = (props) => {
   const [title, setTitle] = useState('')
@@ -23,18 +11,19 @@ const NewBook = (props) => {
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
 
-  const [ createBook, result ] = useMutation(CREATE_BOOK, {
+  const [ createBook, result ] = useMutation(CREATE_BOOK, { // eslint-disable-line
     onError: (error) => {
       // setError(error.graphQLErrors[0].message)
       console.log(error.graphQLErrors[0].message)
     },
-    update: (cache, response) => {      
-      cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {        
-        return {          
-          allBooks: allBooks.concat(response.data.addBook),        
-        }      
-      })    
-    },  
+    update: (cache, response) => {
+      updateCache(cache, { query: ALL_BOOKS }, response.data.addBook)
+      // cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
+      //   return {
+      //     allBooks: allBooks.concat(response.data.addBook),
+      //   }
+      // })
+    },
   })
 
   if (!props.show) {
@@ -60,7 +49,7 @@ const NewBook = (props) => {
     setGenres(genres.concat(genre))
     setGenre('')
   }
-  console.log(result)
+  // console.log(result)
   return (
     <div>
       <form onSubmit={submit}>

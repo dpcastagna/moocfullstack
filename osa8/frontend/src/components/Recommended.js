@@ -9,7 +9,7 @@ const Recommended = (props) => {
 
   const genreBooks = useQuery(GENRE_BOOKS, {
     variables: { genre },
-    pollInterval: 2000,
+    // pollInterval: 2000,
     onError: (error) => {
       // setError(error.graphQLErrors[0].message)
       console.log(error.graphQLErrors[0].message)

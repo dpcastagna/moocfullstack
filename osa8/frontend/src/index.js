@@ -40,7 +40,24 @@ const splitLink = split(
 )
 
 const client = new ApolloClient({
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Book: {
+        fields: {
+          author: {
+            merge: true,
+          },
+        },
+      },
+      allBooks: {
+        fields: {
+          author: {
+            merge: true,
+          },
+        },
+      },
+    },
+  }),
   link: splitLink
 })
 

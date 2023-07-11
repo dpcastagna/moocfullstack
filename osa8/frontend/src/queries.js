@@ -9,6 +9,21 @@ const AUTHOR_DETAILS = gql`
   }
 `
 
+const BOOK_DETAILS = gql`
+  fragment BookDetails on Book {
+    id
+    title
+    author {
+      id
+      name
+      bookCount
+      born
+    }
+    published
+    genres
+  }
+`
+
 export const LOGIN = gql`
   mutation login($username: String!, $password: String!) {
     login(username: $username, password: $password)  {
@@ -88,10 +103,20 @@ export const CREATE_BOOK = gql`
       genres,
       id,
       author {
+        id
         name,
         born,
         bookCount
       }
     }
   }
+`
+
+export const BOOK_ADDED = gql`
+  subscription {
+    bookAdded{
+      ...BookDetails
+    }
+  }
+  ${BOOK_DETAILS}
 `

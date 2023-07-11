@@ -1,31 +1,13 @@
-import { useQuery } from '@apollo/client'
-import { ALL_BOOKS } from '../queries'
+// import { useQuery, useSubscription } from '@apollo/client'
+// import { ALL_BOOKS, BOOK_ADDED } from '../queries'
 import { useState } from 'react'
 import GenreSelected from './GenreSelected'
 import GenreButtons from './GenreButtons'
 
-// const ALL_BOOKS = gql`
-//   query {
-//     allBooks  {
-//       title
-//       published
-//       author {
-//         name
-//         bookCount
-//         born
-//       }
-//       genres
-//       id
-//     }
-//   }
-// `
-
 const Books = (props) => {
   const [selectedGenre, setSelectedGenre] = useState('')
 
-  const allBooks = useQuery(ALL_BOOKS, {
-    pollInterval: 2000  
-  })
+  const allBooks = props.books
 
   if (!props.show) {
     return null
@@ -35,7 +17,7 @@ const Books = (props) => {
     return <div>loading...</div>
   }
 
-  // console.log(result.data?.allBooks)
+  // console.log(allBooks.data?.allBooks)
 
   const books = allBooks.data?.allBooks
   const genres = [
