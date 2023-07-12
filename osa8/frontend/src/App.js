@@ -12,6 +12,13 @@ const Notify = ({errorMessage}) => {
   if ( !errorMessage ) {
     return null
   }
+  if (errorMessage.includes('added')) {
+    return (
+      <div style={{color: 'green'}}>
+        {errorMessage}
+      </div>
+    )
+  }
   return (
     <div style={{color: 'red'}}>
       {errorMessage}
@@ -24,7 +31,8 @@ export const updateCache = (cache, query, addedBook) => {
   const uniqByName = (a) => {
     let seen = new Set()
     return a.filter((item) => {
-      let k = item.name
+      // console.log(item)
+      let k = item.title
       return seen.has(k) ? false : seen.add(k)
     })
   }
@@ -60,6 +68,15 @@ const App = () => {
     }
   })
   // console.log(localStorage.getItem('library-user-token'), booksResult, authorsResult)
+
+  if (booksResult.loading || authorsResult.loading) {
+    return (
+      <div>
+        loading...
+      </div>
+    )
+  }
+  // console.log(booksResult, authorsResult)
   if (!token) {
     return (
       <div>
@@ -69,9 +86,9 @@ const App = () => {
         <button onClick={() => setPage('login')}>login</button>
         
 
-        <Authors show={page === 'authors'} />
+        <Authors show={page === 'authors'} authors={authorsResult} />
 
-        <Books show={page === 'books'} />
+        <Books show={page === 'books'} books={booksResult} />
 
         <LoginForm
           show={page === 'login'}

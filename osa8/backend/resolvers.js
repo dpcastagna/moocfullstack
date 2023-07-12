@@ -26,14 +26,20 @@ const resolvers = {
       // console.log(await Book.find({}))
       return Book.find({})
     },
-    allAuthors: async () => Author.find({}), //authors,
+    allAuthors: async () => {
+      console.log('allAuthorsissa')
+      return await Author.find({})
+    }, //authors,
     // me: async () => User.find({}), //TODO
     me: (root, args, context) => {
       return context.currentUser
     }
   },
   Author: {
-    bookCount: async (root) => await Book.count({ author: root.id }),//books.filter(b => b.author === root.name).length,
+    bookCount: async (root) => {
+      console.log('Authorissa')
+      return await Book.count({ author: root.id })
+    },//books.filter(b => b.author === root.name).length,
     born: (root) => root.born
   },
   Book: {

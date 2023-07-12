@@ -9,18 +9,18 @@ const Authors = (props) => {
   const allAuthors = props.authors
 
   const [ updateAuthor ] = useMutation(UPDATE_AUTHOR)
-
+  // console.log(props)
   if (!props.show) {
     return null
   }
-
+  console.log(allAuthors)
   if (allAuthors.loading)  {
     return <div>loading...</div>
   }
 
   // console.log(result.data?.allAuthors)
 
-  const authors = allAuthors.data?.allAuthors
+  const authors = allAuthors?.data.allAuthors
   // console.log(authors, result)
   const authorNames = authors?.map((a) => {return { value: a.name, label: a.name }})
   // console.log(result.data?.allAuthors, authorNames)
