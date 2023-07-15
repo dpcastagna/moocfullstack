@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useMutation } from '@apollo/client'
-import { ALL_BOOKS, CREATE_BOOK } from '../queries'
+import { ALL_BOOKS, GENRE_BOOKS, ALL_AUTHORS, CREATE_BOOK } from '../queries'
 
 import { updateCache } from '../App'
 
@@ -12,6 +12,7 @@ const NewBook = (props) => {
   const [genres, setGenres] = useState([])
 
   const [ createBook, result ] = useMutation(CREATE_BOOK, { // eslint-disable-line
+    // refetchQueries: [ {query: ALL_BOOKS}, {query: ALL_AUTHORS}, {query: GENRE_BOOKS} ],
     onError: (error) => {
       // setError(error.graphQLErrors[0].message)
       console.log(error.graphQLErrors[0].message)

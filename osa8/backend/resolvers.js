@@ -17,18 +17,18 @@ const resolvers = {
         const author = await Author.findOne({ name: args.author })
         console.log("argsit löytyi", author)
         let filteredBooks = args.author 
-        ? await Book.find({ author: author._id }) 
+        ? await Book.find({ author: author._id })
         : await Book.find({})
         // console.log(filteredBooks)
         filteredBooks = args.genre ? filteredBooks.filter(b => b.genres.includes(args.genre)) : filteredBooks
         return filteredBooks
       }
-      // console.log(await Book.find({}))
-      return Book.find({})
+      // console.log('----------------------------', await Book.find({}).populate('author'))
+      return await Book.find({}).populate('author')
     },
     allAuthors: async () => {
-      console.log('allAuthorsissa')
-      return await Author.find({})
+      // console.log('allAuthorsissa', await Author.find({}).populate('books'))
+      return await Author.find({}).populate('books')
     }, //authors,
     // me: async () => User.find({}), //TODO
     me: (root, args, context) => {
@@ -37,15 +37,17 @@ const resolvers = {
   },
   Author: {
     bookCount: async (root) => {
-      console.log('Authorissa')
+      // console.log('Authorin bookCountissa')
       return await Book.count({ author: root.id })
     },//books.filter(b => b.author === root.name).length,
-    born: (root) => root.born
+    born: (root) => root.born,
+    name: (root) => root.name
   },
   Book: {
     author: async (root) => {
       // console.log("Bookissa: ", root.author._id.toString())
       const author = await Author.findOne({_id: root.author._id})
+      await author.populate('books')
       // console.log("Bookin author: ", author)
       return author
       // {
@@ -162,7 +164,7 @@ const resolvers = {
           extensions: {
             code: 'BAD_USER_INPUT'
           }
-        })        
+        })
       }
   
       const userForToken = {

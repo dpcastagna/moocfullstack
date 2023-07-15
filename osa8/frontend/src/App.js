@@ -105,7 +105,7 @@ const App = () => {
     localStorage.clear()
     client.resetStore()
     setPage('authors')
-    window.location.reload()
+    // window.location.reload()
   }
 
   return (

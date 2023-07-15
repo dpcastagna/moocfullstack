@@ -9,7 +9,7 @@ const Recommended = (props) => {
 
   const genreBooks = useQuery(GENRE_BOOKS, {
     variables: { genre },
-    // pollInterval: 2000,
+    pollInterval: 10000, 
     onError: (error) => {
       // setError(error.graphQLErrors[0].message)
       console.log(error.graphQLErrors[0].message)
@@ -23,8 +23,8 @@ const Recommended = (props) => {
       // localStorage.setItem('library-user-token', token)
       // setPage('authors')
     }
-    console.log('recommended useEffect: ', me.data, genre)
-  }, [me.data, genre]) // eslint-disable-line
+    // console.log('recommended useEffect: ', me.data, genre)
+  }, [me.data, setGenre]) // eslint-disable-line
 
   if (!props.show) {
     return null
@@ -36,7 +36,7 @@ const Recommended = (props) => {
 
   const books = genreBooks.data.allBooks
 
-  console.log(props, me, genre, books)
+  // console.log(props, me, genre, books)
   return (
     <div>
       <h2>recommendations</h2>

@@ -1,19 +1,25 @@
 import { /* useQuery, */ useMutation } from '@apollo/client'
 import { useState } from 'react'
 import Select from 'react-select'
-import { /* ALL_AUTHORS, */ UPDATE_AUTHOR } from '../queries'
+import { ALL_AUTHORS, UPDATE_AUTHOR } from '../queries'
 
 const Authors = (props) => {
   const [selectedAuthor, setSelectedAuthor] = useState(null)
   const [birthYear, setBirthYear] = useState('')
   const allAuthors = props.authors
 
-  const [ updateAuthor ] = useMutation(UPDATE_AUTHOR)
+  const [ updateAuthor ] = useMutation(UPDATE_AUTHOR, {
+    refetchQueries: [ {query: ALL_AUTHORS} ],
+    onError: (error) => {
+      // setError(error.graphQLErrors[0].message)
+      console.log(error.graphQLErrors[0].message)
+    }
+  })
   // console.log(props)
   if (!props.show) {
     return null
   }
-  console.log(allAuthors)
+  // console.log(allAuthors)
   if (allAuthors.loading)  {
     return <div>loading...</div>
   }
