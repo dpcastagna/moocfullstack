@@ -9,7 +9,7 @@
     "calculateBmi": "ts-node bmiCalculator.ts",
     "calculateExercises": "ts-node exerciseCalculator.ts"
   },
-  "author": "",
+  "author": "dc",
   "license": "ISC",
   "devDependencies": {
     "ts-node": "^10.9.1",
