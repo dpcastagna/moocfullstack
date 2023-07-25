@@ -27,7 +27,7 @@ const parseArguments = (args: string[]): exerciseValues => {
   } else {
     throw new Error('Provided values were not numbers!');
   }
-}
+};
 
 const calculateExercises = (target: number, days: number[]) : Result => {
   let trainingDays: number = 0;
@@ -37,17 +37,17 @@ const calculateExercises = (target: number, days: number[]) : Result => {
 
   days.map(day => {
     if (day > 0) {
-      trainingDays += 1 
-      trainingTime += day
+      trainingDays += 1;
+      trainingTime += day;
     }
-  })
+  });
 
   average = trainingTime / days.length;
   const rating: ratingRange = average > target + 0.5 ? 3 : average < target - 0.5 ? 1 : 2;
   if (rating === 1) {
     desc = 'NOT great Bob!';
   } else if (rating === 3) {
-    desc = 'GREAT Bob!'
+    desc = 'GREAT Bob!';
   }
 
   // console.log(average, trainingDays, trainingTime, rating, desc);
@@ -60,8 +60,8 @@ const calculateExercises = (target: number, days: number[]) : Result => {
     ratingDescription: desc,
     target: target,
     average: average
-  }
-}
+  };
+};
 
 // console.log(calculateExercises(2, [3, 0, 2, 4.5, 0, 3, 1]))
 // console.log(calculateExercises(2, [1, 0, 2, 4.5, 0, 3, 1, 0, 4]));
@@ -70,7 +70,7 @@ try {
   // console.log(height, mass)
   console.log(calculateExercises(target, days));
 } catch (error: unknown) {
-  let errorMessage = 'Something went wrong: '
+  let errorMessage = 'Something went wrong: ';
   if (error instanceof Error) {
     errorMessage += error.message;
   }
@@ -78,4 +78,4 @@ try {
 }
 
 
-export {}
+export { calculateExercises };
