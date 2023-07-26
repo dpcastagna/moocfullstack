@@ -65,17 +65,19 @@ const calculateExercises = (target: number, days: number[]) : Result => {
 
 // console.log(calculateExercises(2, [3, 0, 2, 4.5, 0, 3, 1]))
 // console.log(calculateExercises(2, [1, 0, 2, 4.5, 0, 3, 1, 0, 4]));
-try {
-  const { target, days } = parseArguments(process.argv);
-  // console.log(height, mass)
-  console.log(calculateExercises(target, days));
-} catch (error: unknown) {
-  let errorMessage = 'Something went wrong: ';
-  if (error instanceof Error) {
-    errorMessage += error.message;
+// console.log(process.argv)
+if (process.argv.length > 2) {
+  try {
+    const { target, days } = parseArguments(process.argv);
+    // console.log(height, mass)
+    console.log(calculateExercises(target, days));
+  } catch (error: unknown) {
+    let errorMessage = 'Something went wrong: ';
+    if (error instanceof Error) {
+      errorMessage += error.message;
+    }
+    console.log(errorMessage);
   }
-  console.log(errorMessage);
 }
-
 
 export { calculateExercises };

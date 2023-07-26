@@ -11,7 +11,7 @@ app.get('/hello', (_req, res) => {
 });
 
 app.get('/bmi', (req, res) => {
-  console.log(req.query);
+  // console.log(req.query);
   const height = req.query.height;
   const weight = req.query.weight;
   // console.log(height, weight, isNaN(Number(height)), isNaN(Number(weight)));
@@ -34,16 +34,24 @@ app.get('/bmi', (req, res) => {
 });
 
 app.post('/exercises', (req, res) => {
-  console.log(Object.keys(req.body), Object.values(req.body));
+  // console.log(Object.keys(req.body), Object.values(req.body));
   // eslint-disable-next-line
   const days: number[] = req.body.daily_exercises;
   // eslint-disable-next-line
   const target: number = req.body.target;
+  // const testNan = isNaN(days.reduce(function(nans, day) {
+  //   // console.log(nans, day, isNaN(Number(day)));
+  //   return nans + day;
+  // }, 0))
+  // console.log(testNan);
   if (!target || !days || days.length === 0) {
     res.status(400).send({
       error: "parameters missing"
     });
-  } else if (isNaN(Number(target)) || days.map(day => {isNaN(Number(day))})) { // eslint-disable-this-line
+  } else if (isNaN(Number(target)) || isNaN(days.reduce(function(nans, day) {
+      // console.log(nans, day, isNaN(Number(day)));
+      return nans + day;
+    }, 0))) {
     res.status(400).send({
       error: "malformatted parameters"
     });
