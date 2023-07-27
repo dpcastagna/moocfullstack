@@ -1,15 +1,15 @@
 import express from 'express';
-import diagnosisService from '../services/diagnosisService';
+import patientService from '../services/patientService';
 
 const router = express.Router();
 
 router.get('/', (_req, res) => {
-  const entries = diagnosisService.getEntries();
+  const entries = patientService.getPatientsWithoutSsn();
   res.send(entries);
 });
 
 router.post('/', (_req, res) => {
-  res.send('Saving a diagnosis!');
+  res.send('Saving a patient!');
 });
 
 export default router;
