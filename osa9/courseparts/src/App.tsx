@@ -3,15 +3,36 @@ interface HeaderProps {
 }
 
 interface ContentProps {
-  courseParts: {
-    name: string;
-    exerciseCount: number;
-  }[];
+  courseParts: CoursePart[];
 }
 
 interface TotalProps {
   exercises: number;
 }
+
+interface CoursePartBase {
+  name: string;
+  exerciseCount: number;
+}
+interface CoursePartDescription extends CoursePartBase {
+  description: string;
+}
+
+interface CoursePartBasic extends CoursePartDescription {
+  kind: "basic"
+}
+
+interface CoursePartGroup extends CoursePartBase {
+  groupProjectCount: number;
+  kind: "group"
+}
+
+interface CoursePartBackground extends CoursePartDescription {
+  backgroundMaterial: string;
+  kind: "background"
+}
+
+type CoursePart = CoursePartBasic | CoursePartGroup | CoursePartBackground;
 
 const Header = (props: HeaderProps) => {
   return <h1>{props.courseName}</h1>
@@ -22,7 +43,18 @@ const Content = (props: ContentProps) => {
   console.log(parts)
   return (
     <div>
-      {parts.map((part) => {
+      {parts.map(part => {
+        switch (part.kind) {
+          case 'basic':
+            {part.name} {part.description} {part.exerciseCount}
+            break;
+            case 'background':
+              {part.name} {part.exerciseCount} {part.backgroundMaterial}
+              break;
+            case 'group':
+              {part.name} {part.exerciseCount} {part.groupProjectCount}
+              break;
+        }
         return (
         <p key={part.name}>
           {part.name} {part.exerciseCount}
@@ -39,21 +71,49 @@ const Total = (props: TotalProps) => {
   return <div>Number of exercises {exercises}</div>
 }
 
+const Part = (props: CoursePart) => {
+  const part = props;
+  return (
+    <div>
+      asdf
+    </div>
+  )
+}
+
 const App = () => {
   const courseName = "Half Stack application development";
-  const courseParts = [
+  const courseParts: CoursePart[] = [
     {
       name: "Fundamentals",
-      exerciseCount: 10
+      exerciseCount: 10,
+      description: "This is an awesome course part",
+      kind: "basic"
     },
     {
       name: "Using props to pass data",
-      exerciseCount: 7
+      exerciseCount: 7,
+      groupProjectCount: 3,
+      kind: "group"
+    },
+    {
+      name: "Basics of type Narrowing",
+      exerciseCount: 7,
+      description: "How to go from unknown to string",
+      kind: "basic"
     },
     {
       name: "Deeper type usage",
-      exerciseCount: 14
-    }
+      exerciseCount: 14,
+      description: "Confusing description",
+      backgroundMaterial: "https://type-level-typescript.com/template-literal-types",
+      kind: "background"
+    },
+    {
+      name: "TypeScript in frontend",
+      exerciseCount: 10,
+      description: "a hard part",
+      kind: "basic",
+    },
   ];
   const exercises = courseParts.reduce((carry, part) => carry + part.exerciseCount, 0)
 
