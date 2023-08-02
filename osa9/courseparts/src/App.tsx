@@ -9,6 +9,10 @@ interface ContentProps {
   }[];
 }
 
+interface TotalProps {
+  exercises: number;
+}
+
 const Header = (props: HeaderProps) => {
   return <h1>{props.courseName}</h1>
 }
@@ -18,22 +22,21 @@ const Content = (props: ContentProps) => {
   console.log(parts)
   return (
     <div>
-      {/* {parts.map((part) => {
-        <div>
+      {parts.map((part) => {
+        return (
+        <p key={part.name}>
           {part.name} {part.exerciseCount}
-        </div>
-      })} */}
-      <p>
-        {parts[0].name} {parts[0].exerciseCount}
-      </p>
-      <p>
-        {parts[1].name} {parts[1].exerciseCount}
-      </p>
-      <p>
-        {parts[2].name} {parts[2].exerciseCount}
-      </p>
+        </p>
+        )
+      })}
     </div>
   )
+}
+
+const Total = (props: TotalProps) => {
+  const exercises = props.exercises;
+
+  return <div>Number of exercises {exercises}</div>
 }
 
 const App = () => {
@@ -52,26 +55,13 @@ const App = () => {
       exerciseCount: 14
     }
   ];
+  const exercises = courseParts.reduce((carry, part) => carry + part.exerciseCount, 0)
 
   return (
     <div>
-      <h1>{courseName}</h1>
-      <p>
-        {courseParts[0].name} {courseParts[0].exerciseCount}
-      </p>
-      <p>
-        {courseParts[1].name} {courseParts[1].exerciseCount}
-      </p>
-      <p>
-        {courseParts[2].name} {courseParts[2].exerciseCount}
-      </p>
-      <p>
-        Number of exercises{" "}
-        {courseParts.reduce((carry, part) => carry + part.exerciseCount, 0)}
-      </p>
-
       <Header courseName={courseName} />
       <Content courseParts={courseParts} />
+      <Total exercises={exercises} />
     </div>
   );
 };
