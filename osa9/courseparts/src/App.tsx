@@ -32,7 +32,12 @@ interface CoursePartBackground extends CoursePartDescription {
   kind: "background"
 }
 
-type CoursePart = CoursePartBasic | CoursePartGroup | CoursePartBackground;
+interface CoursePartSpecial extends CoursePartDescription {
+  requirements: string[];
+  kind: "special";
+}
+
+type CoursePart = CoursePartBasic | CoursePartGroup | CoursePartBackground | CoursePartSpecial;
 
 const Header = (props: HeaderProps) => {
   return <h1>{props.courseName}</h1>
@@ -44,21 +49,10 @@ const Content = (props: ContentProps) => {
   return (
     <div>
       {parts.map(part => {
-        switch (part.kind) {
-          case 'basic':
-            {part.name} {part.description} {part.exerciseCount}
-            break;
-            case 'background':
-              {part.name} {part.exerciseCount} {part.backgroundMaterial}
-              break;
-            case 'group':
-              {part.name} {part.exerciseCount} {part.groupProjectCount}
-              break;
-        }
         return (
-        <p key={part.name}>
-          {part.name} {part.exerciseCount}
-        </p>
+          <div key={part.name}>
+          <Part part={part} />
+          </div>
         )
       })}
     </div>
@@ -71,12 +65,27 @@ const Total = (props: TotalProps) => {
   return <div>Number of exercises {exercises}</div>
 }
 
-const Part = (props: CoursePart) => {
-  const part = props;
+const Part = (props: {part: CoursePart}) => {
+  const part = props.part;
+  console.log(part);
   return (
-    <div>
-      asdf
-    </div>
+    <p key={part.name}>
+      <b>{part.name} {part.exerciseCount}</b> <br/>
+      { (() => {
+        switch (part.kind) {
+        case 'basic':
+          return <i>{part.description}</i>
+        case 'background':
+          return <><i>{part.description}</i> <br/> submit to {part.backgroundMaterial}</>
+          case 'group':
+            return <>project exercises {part.groupProjectCount}</>
+            case 'special':
+              return <><i>{part.description}</i><br/>required skills: {part.requirements.join(', ')}</>
+        default:
+          return <></>;
+      }})()
+      }
+    </p>
   )
 }
 
@@ -113,6 +122,13 @@ const App = () => {
       exerciseCount: 10,
       description: "a hard part",
       kind: "basic",
+    },
+    {
+      name: "Backend development",
+      exerciseCount: 21,
+      description: "Typing the backend",
+      requirements: ["nodejs", "jest"],
+      kind: "special"
     },
   ];
   const exercises = courseParts.reduce((carry, part) => carry + part.exerciseCount, 0)
