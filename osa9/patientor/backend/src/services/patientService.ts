@@ -10,17 +10,18 @@ const getEntries = (): Patient[] => {
 };
 
 const getPatientsWithoutSsn = (): PatientWithoutSsn[] => {
-  return patients.map(({ id, name, dateOfBirth, gender, occupation }) => ({
+  return patients.map(({ id, name, dateOfBirth, gender, occupation, entries }) => ({
     id,
     name,
     dateOfBirth,
     gender,
-    occupation
+    occupation,
+    entries
   }));
 };
 
-const findById = (id: number): Patient | undefined => {
-  const entry = patients.find(p => Number(p.id) === id);
+const findById = (id: string): Patient | undefined => {
+  const entry = patients.find(p => p.id === id);
   return entry;
 };
 
