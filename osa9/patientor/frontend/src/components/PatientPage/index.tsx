@@ -24,23 +24,28 @@ const PatientPage = () => {
     fetchData();
   }, [id]);
 
-  // console.log(id, patient);
+  console.log(id, patient);
   if (!patient) {
     return <div>Loading...</div>
   }
   return (
     <div className="App">
       <Box>
-        <Typography align="left" variant="h6">
+        <Typography align="left" variant="h5">
           <br/>
           <strong>{patient.name}</strong> &nbsp;
           {patient.gender === 'male' ? <MaleIcon /> : patient.gender === 'female' ? <FemaleIcon /> : <QuestionMarkIcon />}<br/>
           <br/>
+        </Typography>
+        <Typography align="left" variant="h6">
           ssn: {patient.ssn}<br/>
           occupation: {patient.occupation}
         </Typography>
+        <Typography align="left" variant="h5">
+          <br/>
+          <strong>entries</strong>
+        </Typography>
       </Box>
-      
     </div>
   );
 };
