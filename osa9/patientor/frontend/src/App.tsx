@@ -37,7 +37,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<PatientListPage patients={patients} setPatients={setPatients} />} />
             {/* @ts-expect-error Server Component */}
-            <Route path="/patients/:id" element={<PatientPage />} />
+            <Route path="/patients/:id" element={<PatientPage patients={patients} setPatients={setPatients} />} />
           </Routes>
         </Container>
       </Router>
