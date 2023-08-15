@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
- import { Box, /* Table, Button, TableHead, */ Typography, /* TableCell, TableRow, TableBody  */} from '@mui/material';
+import { Box, /* Table, Button, TableHead, */ Typography, /* TableCell, TableRow, TableBody  */} from '@mui/material';
 // import axios from 'axios';
 
 import { /* PatientFormValues, */ Patient, Entry, Diagnosis } from "../../types";
@@ -7,6 +7,7 @@ import { /* PatientFormValues, */ Patient, Entry, Diagnosis } from "../../types"
 import patientService from "../../services/patients";
 import diagnosisService from '../../services/diagnoses'
 import { useParams } from "react-router-dom";
+import Entries from './Entries';
 
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import MaleIcon from '@mui/icons-material/Male';
@@ -55,42 +56,7 @@ const PatientPage = () => {
           occupation: {patient.occupation}
         </Typography>
         { entries && entries.length > 0
-          ? <><Typography align="left" variant="h5">
-                <br/>
-                <strong>entries</strong>
-                <br/>
-                <br/>
-              </Typography>
-              {entries.map(entry => {
-                return (
-                  <Typography key={entry.id} component={'span'} align="left" variant="body1"
-                    style={
-                    {
-                      paddingTop: 10,
-                      paddingLeft: 2,
-                      border: 'solid',
-                      borderWidth: 1,
-                      marginBottom: 5
-                    }
-                  }>
-                    {entry.date} <i>{entry.description}</i>
-                    {entry.diagnosisCodes
-                    ? <ul>
-                        {
-                          entry.diagnosisCodes.map((code) => {
-                            const diagnosis: Diagnosis = diagnoses?.find(d => d.code === code) as Diagnosis;
-                            return (
-                              <li key={diagnosis.code}>{diagnosis.code} {diagnosis.name}</li>
-                            )
-                          })
-                        }
-                      </ul>
-                    : null}
-                    <br/>
-                  </Typography>
-                )}
-              )}
-            </>
+          ? <Entries entries={entries} diagnoses={diagnoses as Diagnosis[]} />
           : null
         }
       </Box>
