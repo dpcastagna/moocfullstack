@@ -46,9 +46,12 @@ const PatientPage = () => {
         <Typography align="left" variant="h4">
           <br/>
           <strong>{patient.name} &nbsp;
-            {patient.gender === 'male' ? <MaleIcon /> : patient.gender === 'female' ? <FemaleIcon /> : <QuestionMarkIcon />}
+            {patient.gender === 'male'
+              ? <MaleIcon fontSize="large" />
+              : patient.gender === 'female'
+                ? <FemaleIcon fontSize="large" />
+                : <QuestionMarkIcon fontSize="large" />}
           </strong>
-          <br/>
           <br/>
         </Typography>
         <Typography align="left" variant="body1">

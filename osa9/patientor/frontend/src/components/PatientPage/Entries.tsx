@@ -1,7 +1,6 @@
-// import { useState, useEffect } from "react";
- import { Box, /* Table, Button, TableHead, */ Typography, /* TableCell, TableRow, TableBody  */} from '@mui/material';
-// import axios from 'axios';
-import { /* PatientFormValues, Patient, */ Entry, Diagnosis } from "../../types";
+import { Box, Typography } from '@mui/material';
+import { Entry, Diagnosis } from "../../types";
+import Heart from '../Heart';
 
 import WorkIcon from '@mui/icons-material/Work';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
@@ -12,40 +11,61 @@ interface EntriesProps {
   diagnoses: Diagnosis[];
 }
 
-const SingleEntry = (props: {entry: Entry}) => {
-  const part = props.entry;
-  console.log(part);
+function assertNever(entry: never): import("react").ReactNode {
+  throw new Error('Function not implemented.');
+}
+
+const SingleEntry = (props: {entry: Entry, diagnoses: Diagnosis[]}) => {
+  const entry = props.entry;
+  const diagnoses = props.diagnoses;
+  // console.log(entry);
   return (
-    <p key={part.id}>
-      <b>{part.date}</b> &nbsp;
-      { 
+    <span key={entry.id}>
+      <b>{entry.date}</b> &nbsp;
+      {
         (() => {
-          switch (part.type) {
+          switch (entry.type) {
             case 'HealthCheck':
               return  <>
                         <MedicalServicesIcon /> <br/>
-                        <i>{part.description}</i>
+                        <i>{entry.description}</i> <br/>
+                        <Heart num={entry.healthCheckRating} />
                       </>
             case 'OccupationalHealthcare':
               return  <>
-                        <WorkIcon /> {part.employerName} <br/>
-                        <i>{part.description}</i>
+                        <WorkIcon /> {entry.employerName} <br/>
+                        <i>{entry.description}</i>
                       </>
             case 'Hospital':
               return <>
                       <LocalHospitalIcon /> <br/>
-                      <i>{part.description}</i>
+                      <i>{entry.description}</i>
                     </>
             default:
-              return <></>;
+              return assertNever(entry);
           }
           }
         )()
       }
-    </p>
+      <br/>
+      {
+        entry.diagnosisCodes
+        ? <ul>
+            {
+              entry.diagnosisCodes.map((code) => {
+                const diagnosis: Diagnosis = diagnoses?.find(d => d.code === code) as Diagnosis;
+                return (
+                  <li key={diagnosis.code}>{diagnosis.code} {diagnosis.name}</li>
+                )
+              })
+            }
+          </ul> 
+        : null
+      }
+      diagnose by {entry.specialist}
+    </span>
   )
 }
-
 
 const Entries = (props: EntriesProps) => {
   const entries = props.entries;
@@ -62,30 +82,16 @@ const Entries = (props: EntriesProps) => {
       {entries.map(entry => {
         return (
           <Box key={entry.id} sx={{
-            display: 'flex', paddingTop: 2,
+            display: 'flex', paddingTop: 0,
             paddingLeft: 1,
-            paddingBottom: 2,
+            paddingBottom: 0,
             border: 'solid',
             borderWidth: 1,
             borderRadius: 2,
-            marginBottom: 5 
+            marginBottom: 1
           }}>
             <Typography  component={'span'} align="left" variant="body1" >
-              {entry.date} <i>{entry.description}</i>
-              {entry.diagnosisCodes
-              ? <ul>
-                  {
-                    entry.diagnosisCodes.map((code) => {
-                      const diagnosis: Diagnosis = diagnoses?.find(d => d.code === code) as Diagnosis;
-                      return (
-                        <li key={diagnosis.code}>{diagnosis.code} {diagnosis.name}</li>
-                      )
-                    })
-                  }
-                </ul>
-              : null}
-              <br/>
-              <SingleEntry entry={entry} />
+              <SingleEntry entry={entry} diagnoses={diagnoses} />
             </Typography>
           </Box>
         )}
