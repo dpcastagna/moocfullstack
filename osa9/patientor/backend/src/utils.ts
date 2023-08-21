@@ -1,4 +1,4 @@
-import { NewPatient, Gender, Entry } from './types';
+import { NewPatient, Gender, Entry, Diagnosis } from './types';
 
 const isString = (text: unknown): text is string => {
   return typeof text === 'string' || text instanceof String;
@@ -50,12 +50,41 @@ const parseOccupation = (occupation: unknown): string => {
   return occupation;
 };
 
-const parseEntries = (entries: unknown): Entry[] => {
-  if (!entries || !Array.isArray(entries)) {
-    throw new Error('Incorrect or missing entries');
+const parseDiagnosisCodes = (object: unknown): Array<Diagnosis['code']> =>  {
+  if (!object || typeof object !== 'object' || !('diagnosisCodes' in object)) {
+    // we will just trust the data to be in correct form
+    return [] as Array<Diagnosis['code']>;
   }
 
-  return entries;
+  return object.diagnosisCodes as Array<Diagnosis['code']>;
+};
+
+const parseEntry = (entry: unknown): Entry => {
+  if (!entry || typeof entry !== 'object') {
+    throw new Error('Incorrect or missing entry');
+  }
+  if ('type' in entry) {
+    if (entry.type === 'HealthCheck' && 'healthCheckRating' in entry) {
+      return entry as Entry;
+    } else if (entry.type === 'Hospital' && 'discharge' in entry) {
+      return entry as Entry;
+    } else if (entry.type === 'OccupationalHealthcare' && 'employerName' in entry) {
+      return entry as Entry;
+    }
+  }
+  throw new Error('Incorrect or missing entry type');
+};
+
+const parseEntries = (entries: unknown): Entry[] => {
+  if (!entries || typeof entries !== 'object' || !Array.isArray(entries)) {
+    throw new Error('Incorrect or missing entries');
+  }
+  entries.forEach(entry => {
+    parseEntry(entry);
+    parseDiagnosisCodes(entry);
+  });
+
+  return entries as Entry[];
 };
 
 const toNewPatient = (object: unknown): NewPatient => {

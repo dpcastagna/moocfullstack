@@ -32,7 +32,25 @@ router.post('/', (req, res) => {
     }
     res.status(400).send(errorMessage);
   }
-  
+});
+
+router.post('/:id/entries', (req,res) => {
+  try {
+    const id = req.params.id;
+
+    // const newDiagnosisCodes = parseDiagnosisCodes(req.body.diagnosisCodes);
+    // console.log(newDiagnosisCodes);
+    const newEntry = req.body;
+    
+    const addedEntry = patientService.updatePatient(id, newEntry);
+    res.json(addedEntry);
+  } catch (error: unknown) {
+    let errorMessage = 'Something went wrong.';
+    if (error instanceof Error) {
+      errorMessage += ' Error: ' + error.message;
+    }
+    res.status(400).send(errorMessage);
+  }
 });
 
 export default router;
