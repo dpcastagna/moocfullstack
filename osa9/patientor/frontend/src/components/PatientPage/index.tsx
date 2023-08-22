@@ -8,6 +8,7 @@ import patientService from "../../services/patients";
 import diagnosisService from '../../services/diagnoses'
 import { useParams } from "react-router-dom";
 import Entries from './Entries';
+import AddEntryForm from './AddEntryForm';
 
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import MaleIcon from '@mui/icons-material/Male';
@@ -36,6 +37,13 @@ const PatientPage = () => {
     fetchData();
   }, [id]);
 
+  const onSubmit = () => {
+    console.log('submit');
+  };
+  const onClose = () => {
+    console.log('close');
+  };
+
   console.log(id, patient, entries, diagnoses);
   if (!patient) {
     return <div>Loading...</div>
@@ -58,6 +66,7 @@ const PatientPage = () => {
           ssn: {patient.ssn}<br/>
           occupation: {patient.occupation}
         </Typography>
+        <AddEntryForm onSubmit={onSubmit} onCancel={onClose} />
         { entries && entries.length > 0
           ? <Entries entries={entries} diagnoses={diagnoses as Diagnosis[]} />
           : null
