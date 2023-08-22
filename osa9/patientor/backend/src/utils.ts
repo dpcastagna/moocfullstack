@@ -93,7 +93,7 @@ const toNewPatient = (object: unknown): NewPatient => {
   }
   
   if ('name' in object && 'dateOfBirth' in object && 'ssn' in object && 'gender' in object && 'occupation' in object && 'entries' in object) {
-    const newEntry: NewPatient = {
+    const newPatient: NewPatient = {
       name: parseName(object.name),
       dateOfBirth: parseDate(object.dateOfBirth),
       ssn: parseSsn(object.ssn),
@@ -102,10 +102,24 @@ const toNewPatient = (object: unknown): NewPatient => {
       entries: parseEntries(object.entries),
     };
 
-    return newEntry;
+    return newPatient;
   }
   console.log(object)
   throw new Error('Incorrect data: some fields are missing');
 };
 
-export default toNewPatient;
+const toNewEntry = (object: unknown): Entry => {
+  if ( !object || typeof object !== 'object' ) {
+    throw new Error('Incorrect or missing data');
+  }
+  
+  if ('specialist' in object && 'description' in object && 'date' in object) {
+    const newEntry: Entry = parseEntry(object);
+
+    return newEntry;
+  }
+  console.log('toNewEntry: ', object);
+  throw new Error('Incorrect data: some fields are missing');
+};
+
+export default { toNewPatient, toNewEntry , parseDiagnosisCodes };
