@@ -1,12 +1,13 @@
 import { useState, SyntheticEvent } from "react";
 
-import {  TextField, InputLabel, MenuItem, Select, Grid, Button, SelectChangeEvent, Box } from '@mui/material';
+import { TextField, InputLabel, MenuItem, Select, Grid, Button, SelectChangeEvent, Box, Typography } from '@mui/material';
 
-import { PatientFormValues, Gender } from "../../types";
+import { PatientFormValues, HealthCheckFormValues, OccupationalHealthcareFormValues, HospitalFormValues, Gender } from "../../types";
 
 interface Props {
   onCancel: () => void;
   onSubmit: (values: PatientFormValues) => void;
+  formType: number;
 }
 
 interface GenderOption{
@@ -18,7 +19,34 @@ const genderOptions: GenderOption[] = Object.values(Gender).map(v => ({
   value: v, label: v.toString()
 }));
 
-const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
+const HospitalForm = () => {
+
+  return (
+    <>
+      New Hospital Entry
+    </>
+  )
+}
+
+const OccupationalForm = () => {
+
+  return (
+    <>
+      New Occupational Healthcare Entry
+    </>
+  )
+}
+
+const HealthCheckForm = () => {
+
+  return (
+    <>
+      New HealthCheck Entry
+    </>
+  )
+}
+
+const AddEntryForm = ({ onCancel, onSubmit, formType }: Props) => {
   const [name, setName] = useState('');
   const [occupation, setOccupation] = useState('');
   const [ssn, setSsn] = useState('');
@@ -36,7 +64,7 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
     }
   };
 
-  const addPatient = (event: SyntheticEvent) => {
+  const addEntry = (event: SyntheticEvent) => {
     event.preventDefault();
     onSubmit({
       name,
@@ -46,6 +74,11 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
       gender
     });
   };
+  if (formType === 0) {
+    return (
+      <></>
+    )
+  }
 
   return (
     <Box sx={{
@@ -60,7 +93,23 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
       marginBottom: 1
     }}>
       <div>
-        <form onSubmit={addPatient}>
+        <Typography align="left" variant="h5">
+          <b>
+            {(() => {
+              switch (formType) {
+                case 1:
+                  return <HospitalForm />
+                case 2:
+                  return <OccupationalForm />
+                case 3:
+                  return <HealthCheckForm />
+                default:
+                  return <></>
+              }
+            })()}
+          </b>
+        </Typography>
+        <form onSubmit={addEntry}>
           <TextField
             label="Name"
             fullWidth 

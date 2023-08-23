@@ -18,7 +18,7 @@ function assertNever(entry: never): import("react").ReactNode {
 const SingleEntry = (props: {entry: Entry, diagnoses: Diagnosis[]}) => {
   const entry = props.entry;
   const diagnoses = props.diagnoses;
-  // console.log(entry);
+  
   return (
     <span key={entry.id}>
       <b>{entry.date}</b> &nbsp;
