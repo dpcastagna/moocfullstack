@@ -25,9 +25,9 @@ const Heart = (props: {num: HeartProps}) => {
   (() => {
         switch (num) {
           case 0:
-            return  <GreenHeart />;
+            return <GreenHeart />;
           case 1:
-            return  <YellowHeart />;
+            return <YellowHeart />;
           case 2:
             return <OrangeHeart />;
           case 3:

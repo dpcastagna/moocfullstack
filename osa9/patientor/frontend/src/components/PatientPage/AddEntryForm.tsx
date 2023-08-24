@@ -2,78 +2,96 @@ import { useState, SyntheticEvent } from "react";
 
 import { TextField, InputLabel, MenuItem, Select, Grid, Button, SelectChangeEvent, Box, Typography } from '@mui/material';
 
-import { PatientFormValues, HealthCheckFormValues, OccupationalHealthcareFormValues, HospitalFormValues, Gender } from "../../types";
+import { /* PatientFormValues, */ HealthCheckFormValues, OccupationalHealthcareFormValues, HospitalFormValues, Gender } from "../../types";
 
 interface Props {
   onCancel: () => void;
-  onSubmit: (values: PatientFormValues) => void;
+  onSubmit: (values: /* PatientFormValues | */ HealthCheckFormValues | OccupationalHealthcareFormValues | HospitalFormValues) => void;
   formType: number;
 }
 
-interface GenderOption{
-  value: Gender;
-  label: string;
+// interface GenderOption{
+//   value: Gender;
+//   label: string;
+// }
+
+// const genderOptions: GenderOption[] = Object.values(Gender).map(v => ({
+//   value: v, label: v.toString()
+// }));
+
+const BaseForm = () => {
+
+  return (
+    <></>
+  )
 }
 
-const genderOptions: GenderOption[] = Object.values(Gender).map(v => ({
-  value: v, label: v.toString()
-}));
-
-const HospitalForm = () => {
+const HospitalForm = (/* {addEntry} */) => {
 
   return (
     <>
       New Hospital Entry
+      {/* <form onSubmit={addEntry}>
+        <BaseForm />
+      </form> */}
     </>
   )
 }
 
-const OccupationalForm = () => {
+const OccupationalHealthcareForm = (/* {addEntry} */) => {
 
   return (
     <>
       New Occupational Healthcare Entry
+      {/* <form onSubmit={addEntry}>
+        <BaseForm />
+      </form> */}
     </>
   )
 }
 
-const HealthCheckForm = () => {
+const HealthCheckForm = (/* {addEntry} */) => {
 
   return (
     <>
       New HealthCheck Entry
+      {/* <form onSubmit={addEntry}>
+        <BaseForm />
+      </form> */}
     </>
   )
 }
 
 const AddEntryForm = ({ onCancel, onSubmit, formType }: Props) => {
-  const [name, setName] = useState('');
-  const [occupation, setOccupation] = useState('');
-  const [ssn, setSsn] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState('');
-  const [gender, setGender] = useState(Gender.Other);
+  const [description, setDescription] = useState<string>('');
+  const [date, setDate] = useState<string>('');
+  const [specialist, setSpecialist] = useState<string>('');
+  const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
+  const [dischargeDate, setDischargeDate] = useState<string>('');
+  const [dischargeCriteria, setDischargeCriteria] = useState<string>('');
 
-  const onGenderChange = (event: SelectChangeEvent<string>) => {
-    event.preventDefault();
-    if ( typeof event.target.value === "string") {
-      const value = event.target.value;
-      const gender = Object.values(Gender).find(g => g.toString() === value);
-      if (gender) {
-        setGender(gender);
-      }
-    }
-  };
+  // const onGenderChange = (event: SelectChangeEvent<string>) => {
+  //   event.preventDefault();
+  //   if ( typeof event.target.value === "string") {
+  //     const value = event.target.value;
+  //     const gender = Object.values(Gender).find(g => g.toString() === value);
+  //     if (gender) {
+  //       setGender(gender);
+  //     }
+  //   }
+  // };
 
   const addEntry = (event: SyntheticEvent) => {
     event.preventDefault();
     onSubmit({
-      name,
-      occupation,
-      ssn,
-      dateOfBirth,
-      gender
+      description,
+      date,
+      specialist,
+      diagnosisCodes,
+      discharge: {date: dischargeDate, criteria: dischargeCriteria}
     });
   };
+
   if (formType === 0) {
     return (
       <></>
@@ -98,11 +116,11 @@ const AddEntryForm = ({ onCancel, onSubmit, formType }: Props) => {
             {(() => {
               switch (formType) {
                 case 1:
-                  return <HospitalForm />
+                  return <HospitalForm /* addEntry={addEntry} */ />
                 case 2:
-                  return <OccupationalForm />
+                  return <OccupationalHealthcareForm /* addEntry={addEntry} */ />
                 case 3:
-                  return <HealthCheckForm />
+                  return <HealthCheckForm /* addEntry={addEntry} */ />
                 default:
                   return <></>
               }
@@ -111,32 +129,32 @@ const AddEntryForm = ({ onCancel, onSubmit, formType }: Props) => {
         </Typography>
         <form onSubmit={addEntry}>
           <TextField
-            label="Name"
+            label="Description"
             fullWidth 
-            value={name}
-            onChange={({ target }) => setName(target.value)}
+            value={description}
+            onChange={({ target }) => setDescription(target.value)}
           />
           <TextField
+            label="Date"
+            placeholder="YYYY-MM-DD"
+            // fullWidth
+            value={date}
+            onChange={({ target }) => setDate(target.value)}
+          />
+          <TextField
+            label="Specialist"
+            fullWidth
+            value={specialist}
+            onChange={({ target }) => setSpecialist(target.value)}
+          />
+          {/* <TextField
             label="Social security number"
             fullWidth
             value={ssn}
             onChange={({ target }) => setSsn(target.value)}
-          />
-          <TextField
-            label="Date of birth"
-            placeholder="YYYY-MM-DD"
-            fullWidth
-            value={dateOfBirth}
-            onChange={({ target }) => setDateOfBirth(target.value)}
-          />
-          <TextField
-            label="Occupation"
-            fullWidth
-            value={occupation}
-            onChange={({ target }) => setOccupation(target.value)}
-          />
+          /> */}
 
-          <InputLabel style={{ marginTop: 20 }}>Gender</InputLabel>
+          {/* <InputLabel style={{ marginTop: 20 }}>Gender</InputLabel>
           <Select
             label="Gender"
             fullWidth
@@ -151,7 +169,7 @@ const AddEntryForm = ({ onCancel, onSubmit, formType }: Props) => {
               {option.label
             }</MenuItem>
           )}
-          </Select>
+          </Select> */}
 
           <Grid>
             <Grid item>
