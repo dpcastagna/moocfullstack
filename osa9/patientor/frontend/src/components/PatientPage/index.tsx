@@ -19,7 +19,7 @@ const PatientPage = () => {
   const [patient, setPatient] = useState<Patient>();
   const [entries, setEntries] = useState<Entry[]>();
   const [diagnoses,setDiagnoses] = useState<Diagnosis[]>();
-  const [formType, setFormType] = useState<number>(0);
+  const [formType, setFormType] = useState<'' | 'Hospital' | 'OccupationalHealthcare' | 'HealthCheck'>('');
   const id: string | undefined = useParams().id as string;
   
   useEffect(() => {
@@ -43,12 +43,13 @@ const PatientPage = () => {
   };
   const onClose = () => {
     console.log('close');
+    setFormType('');
   };
-  const formButtonClick = (num: number) => {
+  const formButtonClick = (num: typeof formType) => {
     setFormType(num);
   }
 
-  console.log(id, patient, entries, diagnoses, formType);
+  console.log(patient, entries, diagnoses, formType);
   if (!patient) {
     return <div>Loading...</div>
   }
@@ -74,15 +75,15 @@ const PatientPage = () => {
           occupation: {patient.occupation}
         </Typography>
         <br/>
-        <Box>
-          { formType === 0
+        {/* <Box>
+          { formType === ''
             ? <>
               <Button
                 color="error"
                 variant="contained"
                 style={{ float: "none" }}
                 type="button"
-                onClick={() => {formButtonClick(1)}}
+                onClick={() => {formButtonClick('Hospital')}}
               >
                 New Hospital Entry
               </Button>
@@ -92,7 +93,7 @@ const PatientPage = () => {
                 style={{ float: "none" }}
                 type="button"
                 variant="contained"
-                onClick={() => {formButtonClick(2)}}
+                onClick={() => {formButtonClick('OccupationalHealthcare')}}
               >
                 New Occupational Healthcare Entry
               </Button>
@@ -102,7 +103,7 @@ const PatientPage = () => {
                 style={{ float: "none" }}
                 type="button"
                 variant="contained"
-                onClick={() => {formButtonClick(3)}}
+                onClick={() => {formButtonClick('HealthCheck')}}
               >
                 New Healthcheck Entry
               </Button>
@@ -111,22 +112,23 @@ const PatientPage = () => {
                 <Button
                   color="warning"
                   style={{ float: "none" }}
+                  fullWidth
                   type="button"
                   variant="contained"
-                  onClick={() => {formButtonClick(0)}}
+                  onClick={() => {formButtonClick('')}}
                 >
                   Cancel New Entry
                 </Button>
                 <br/><br/>
               </>
           }
-        </Box>
+        </Box> */}
         
-        <AddEntryForm onSubmit={onSubmit} onCancel={onClose} formType={formType} />
+        <AddEntryForm />
 
         { entries && entries.length > 0
           ? <Entries entries={entries} diagnoses={diagnoses as Diagnosis[]} />
-          : null
+          : <></>
         }
       </Box>
     </div>
