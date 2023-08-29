@@ -1,8 +1,8 @@
 import { useState, SyntheticEvent, SetStateAction } from "react";
 
-import { TextField, InputLabel, MenuItem, Select, Grid, Button, SelectChangeEvent, Box, Typography } from '@mui/material';
+import { TextField, /* InputLabel, MenuItem, Select, */ Grid, Button, /* SelectChangeEvent, */ Box, Typography } from '@mui/material';
 
-import { /* PatientFormValues, */ HealthCheckFormValues, OccupationalHealthcareFormValues, HospitalFormValues, Gender } from "../../types";
+// import { /* PatientFormValues, */ HealthCheckFormValues, OccupationalHealthcareFormValues, HospitalFormValues, Gender } from "../../types";
 
 // interface AddEntryFormProps {
 //   onCancel: () => void;
@@ -18,7 +18,16 @@ interface BaseFormProps {
   specialist: string;
   setSpecialist: (value: React.SetStateAction<string>) => void;
   diagnosisCodes: string[];
-  setDiagnosisCodes: (value: ConcatArray<string>) => void;
+  setDiagnosisCodes: (value: React.SetStateAction<string[]>) => void;
+  newCode: string;
+  setNewCode: (value: React.SetStateAction<string>) => void;
+}
+
+interface HospitalFormProps {
+  dischargeDate: string;
+  setDischargeDate: (value: React.SetStateAction<string>) => void;
+  dischargeCriteria: string;
+  setDischargeCriteria: (value: React.SetStateAction<string>) => void;
 }
 
 // interface GenderOption{
@@ -30,8 +39,26 @@ interface BaseFormProps {
 //   value: v, label: v.toString()
 // }));
 
-const BaseForm = ({description, setDescription, date, setDate, specialist, setSpecialist, diagnosisCodes, setDiagnosisCodes}: BaseFormProps) => {
-
+const BaseForm = ({
+    description,
+    setDescription,
+    date,
+    setDate,
+    specialist,
+    setSpecialist,
+    diagnosisCodes,
+    setDiagnosisCodes,
+    newCode,
+    setNewCode
+  }: BaseFormProps) => {
+  
+  const addCode = () => {
+    const newCodes = diagnosisCodes.concat(newCode);
+    setDiagnosisCodes(newCodes);
+    // console.log(newCode, diagnosisCodes);
+    setNewCode('');
+  };
+  
   return (
     <>
       <TextField
@@ -56,26 +83,47 @@ const BaseForm = ({description, setDescription, date, setDate, specialist, setSp
       <TextField
         label="Add diagnosis code"
         fullWidth
-        value={diagnosisCodes}
-        onChange={({ target }) => setDiagnosisCodes(diagnosisCodes.concat(target.value))}
+        value={newCode}
+        onChange={({ target }) => setNewCode(target.value)}
+      />
+      <Button
+        color="secondary"
+        style={{ float: "none" }}
+        type="button"
+        variant="contained"
+        onClick={() => {addCode()}}
+      >
+        Add diagnosis code
+      </Button>
+      <br/>
+      Diagnosis codes: {diagnosisCodes.join(', ')}
+      <br/>
+    </>
+  )
+}
+
+const HospitalForm = ({ dischargeDate, setDischargeDate, dischargeCriteria, setDischargeCriteria}: HospitalFormProps) => {
+
+  return (
+    <>
+      <TextField
+        label="Discharge Date"
+        placeholder="YYYY-MM-DD"
+        // fullWidth
+        value={dischargeDate}
+        onChange={({ target }) => setDischargeDate(target.value)}
+      />
+      <TextField
+        label="Discharge Criteria"
+        fullWidth
+        value={dischargeCriteria}
+        onChange={({ target }) => setDischargeCriteria(target.value)}
       />
     </>
   )
 }
 
-const HospitalForm = (/* {addEntry} */) => {
-
-  return (
-    <>
-      
-      {/* <form onSubmit={addEntry}>
-        <BaseForm />
-      </form> */}
-    </>
-  )
-}
-
-const OccupationalHealthcareForm = (/* {addEntry} */) => {
+const OccupationalHealthcareForm = () => {
 
   return (
     <>
@@ -105,8 +153,13 @@ const AddEntryForm = () => {
   const [date, setDate] = useState<string>('');
   const [specialist, setSpecialist] = useState<string>('');
   const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
+  const [newCode, setNewCode] = useState<string>('');
   const [dischargeDate, setDischargeDate] = useState<string>('');
   const [dischargeCriteria, setDischargeCriteria] = useState<string>('');
+  const [rating, setRating] = useState< 0 | 1 | 2 | 3>(0);
+  const [employer, setEmployer] = useState<string>('');
+  const [sickStart, setSickStart] = useState<string>('');
+  const [sickEnd, setSickEnd] = useState<string>('');
 
   // const onGenderChange = (event: SelectChangeEvent<string>) => {
   //   event.preventDefault();
@@ -119,15 +172,30 @@ const AddEntryForm = () => {
   //   }
   // };
 
+  const resetValues = () => {
+    setFormType('');
+    setDescription('');
+    setDate('');
+    setSpecialist('');
+    setDiagnosisCodes([]);
+    setNewCode('');
+    setDischargeDate('');
+    setDischargeCriteria('');
+    setRating(0);
+    setEmployer('');
+    setSickStart('');
+    setSickEnd('');
+  }
+
   const onSubmit = () => {
     console.log('submit');
   };
   const onCancel = () => {
     console.log('close');
-    setFormType('');
+    resetValues();
   };
-  const formButtonClick = (num: typeof formType) => {
-    setFormType(num);
+  const formButtonClick = (t: typeof formType) => {
+    setFormType(t);
   }
 
   const addEntry = (event: SyntheticEvent) => {
@@ -147,48 +215,40 @@ const AddEntryForm = () => {
       }
     };
   };
-
+  
   if (formType === '') {
     return (
-      <>
-        <Box>
-          { formType === ''
-            ? <>
-              <Button
-                color="error"
-                variant="contained"
-                style={{ float: "none" }}
-                type="button"
-                onClick={() => {formButtonClick('Hospital')}}
-              >
-                New Hospital Entry
-              </Button>
-              &nbsp;
-              <Button
-                color="success"
-                style={{ float: "none" }}
-                type="button"
-                variant="contained"
-                onClick={() => {formButtonClick('OccupationalHealthcare')}}
-              >
-                New Occupational Healthcare Entry
-              </Button>
-              &nbsp;
-              <Button
-                color="secondary"
-                style={{ float: "none" }}
-                type="button"
-                variant="contained"
-                onClick={() => {formButtonClick('HealthCheck')}}
-              >
-                New Healthcheck Entry
-              </Button>
-            </>
-            : <>
-              </>
-          }
-        </Box>
-      </>
+      <Box>
+        <Button
+          color="error"
+          variant="contained"
+          style={{ float: "none" }}
+          type="button"
+          onClick={() => {formButtonClick('Hospital')}}
+        >
+          New Hospital Entry
+        </Button>
+        &nbsp;
+        <Button
+          color="success"
+          style={{ float: "none" }}
+          type="button"
+          variant="contained"
+          onClick={() => {formButtonClick('OccupationalHealthcare')}}
+        >
+          New Occupational Healthcare Entry
+        </Button>
+        &nbsp;
+        <Button
+          color="secondary"
+          style={{ float: "none" }}
+          type="button"
+          variant="contained"
+          onClick={() => {formButtonClick('HealthCheck')}}
+        >
+          New Healthcheck Entry
+        </Button>
+      </Box>
     )
   }
 
@@ -200,7 +260,7 @@ const AddEntryForm = () => {
         fullWidth
         type="button"
         variant="contained"
-        onClick={() => {formButtonClick('')}}
+        onClick={() => {resetValues()}}
       >
         Cancel New Entry
       </Button>
@@ -219,32 +279,36 @@ const AddEntryForm = () => {
           <form onSubmit={addEntry}>
           <Typography align="left" variant="h5">
             <b>
+              New {formType} Entry
+              <BaseForm description={description} setDescription={function (value: SetStateAction<string>): void {
+                setDescription(value);
+              } } date={date} setDate={function (value: SetStateAction<string>): void {
+                setDate(value);
+              } } specialist={specialist} setSpecialist={function (value: SetStateAction<string>): void {
+                setSpecialist(value);
+              } } diagnosisCodes={diagnosisCodes} setDiagnosisCodes={function (value: SetStateAction<string[]>): void {
+                setDiagnosisCodes(value);
+              } } newCode={newCode} setNewCode={function (value: SetStateAction<string>): void {
+                setNewCode(value);
+              } }/>
               {(() => {
                 switch (formType) {
                   case 'Hospital':
                     return  <>
-                      New Hospital Entry
-                      <BaseForm description={description} setDescription={function (value: SetStateAction<string>): void {
-                        setDescription(value);
-                      } } date={date} setDate={function (value: SetStateAction<string>): void {
-                        setDate(value);
-                      } } specialist={specialist} setSpecialist={function (value: SetStateAction<string>): void {
-                        setSpecialist(value);
-                      } } diagnosisCodes={diagnosisCodes} setDiagnosisCodes={function (value: ConcatArray<string>): void {
-                        setDiagnosisCodes(diagnosisCodes.concat(value));
-                      } } />
-                      <HospitalForm /* addEntry={addEntry} */ />
-                      </>
+                      <HospitalForm dischargeDate={dischargeDate} setDischargeDate={function (value: SetStateAction<string>): void {
+                        setDischargeDate(value);
+                      } } dischargeCriteria={dischargeCriteria} setDischargeCriteria={function (value: SetStateAction<string>): void {
+                        setDischargeCriteria(value);
+                      } }/>
+                    </>
                   case 'OccupationalHealthcare':
                     return  <>
-                              New Occupational Healthcare Entry
-                              <OccupationalHealthcareForm /* addEntry={addEntry} */ />
-                            </>
+                      <OccupationalHealthcareForm />
+                    </>
                   case 'HealthCheck':
                     return  <>
-                              New HealthCheck entry
-                              <HealthCheckForm /* addEntry={addEntry} */ />
-                            </>
+                      <HealthCheckForm />
+                    </>
                   default:
                     return <></>
                 }

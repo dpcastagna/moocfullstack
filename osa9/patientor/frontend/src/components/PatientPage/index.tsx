@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Box, /* Table, Button, TableHead, */ Typography, Button /* TableCell, TableRow, TableBody  */} from '@mui/material';
+import { Box, /* Table, Button, TableHead, */ Typography, /* Button, TableCell, TableRow, TableBody  */} from '@mui/material';
 // import axios from 'axios';
 
 import { /* PatientFormValues, */ Patient, Entry, Diagnosis } from "../../types";
@@ -19,7 +19,7 @@ const PatientPage = () => {
   const [patient, setPatient] = useState<Patient>();
   const [entries, setEntries] = useState<Entry[]>();
   const [diagnoses,setDiagnoses] = useState<Diagnosis[]>();
-  const [formType, setFormType] = useState<'' | 'Hospital' | 'OccupationalHealthcare' | 'HealthCheck'>('');
+  // const [formType, setFormType] = useState<'' | 'Hospital' | 'OccupationalHealthcare' | 'HealthCheck'>('');
   const id: string | undefined = useParams().id as string;
   
   useEffect(() => {
@@ -38,18 +38,18 @@ const PatientPage = () => {
     fetchData();
   }, [id]);
 
-  const onSubmit = () => {
-    console.log('submit');
-  };
-  const onClose = () => {
-    console.log('close');
-    setFormType('');
-  };
-  const formButtonClick = (num: typeof formType) => {
-    setFormType(num);
-  }
+  // const onSubmit = () => {
+  //   console.log('submit');
+  // };
+  // const onClose = () => {
+  //   console.log('close');
+  //   setFormType('');
+  // };
+  // const formButtonClick = (num: typeof formType) => {
+  //   setFormType(num);
+  // }
 
-  console.log(patient, entries, diagnoses, formType);
+  // console.log(patient, entries, diagnoses, formType);
   if (!patient) {
     return <div>Loading...</div>
   }
@@ -75,54 +75,6 @@ const PatientPage = () => {
           occupation: {patient.occupation}
         </Typography>
         <br/>
-        {/* <Box>
-          { formType === ''
-            ? <>
-              <Button
-                color="error"
-                variant="contained"
-                style={{ float: "none" }}
-                type="button"
-                onClick={() => {formButtonClick('Hospital')}}
-              >
-                New Hospital Entry
-              </Button>
-              &nbsp;
-              <Button
-                color="success"
-                style={{ float: "none" }}
-                type="button"
-                variant="contained"
-                onClick={() => {formButtonClick('OccupationalHealthcare')}}
-              >
-                New Occupational Healthcare Entry
-              </Button>
-              &nbsp;
-              <Button
-                color="secondary"
-                style={{ float: "none" }}
-                type="button"
-                variant="contained"
-                onClick={() => {formButtonClick('HealthCheck')}}
-              >
-                New Healthcheck Entry
-              </Button>
-            </>
-            : <>
-                <Button
-                  color="warning"
-                  style={{ float: "none" }}
-                  fullWidth
-                  type="button"
-                  variant="contained"
-                  onClick={() => {formButtonClick('')}}
-                >
-                  Cancel New Entry
-                </Button>
-                <br/><br/>
-              </>
-          }
-        </Box> */}
         
         <AddEntryForm />
 
