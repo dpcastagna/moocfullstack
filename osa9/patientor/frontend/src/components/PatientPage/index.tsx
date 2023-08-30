@@ -48,8 +48,8 @@ const PatientPage = () => {
   // const formButtonClick = (num: typeof formType) => {
   //   setFormType(num);
   // }
-
   // console.log(patient, entries, diagnoses, formType);
+
   if (!patient) {
     return <div>Loading...</div>
   }
@@ -76,7 +76,7 @@ const PatientPage = () => {
         </Typography>
         <br/>
         
-        <AddEntryForm />
+        <AddEntryForm entries={entries as Entry[]} setEntries={setEntries as React.Dispatch<React.SetStateAction<Entry[]>>} />
 
         { entries && entries.length > 0
           ? <Entries entries={entries} diagnoses={diagnoses as Diagnosis[]} />

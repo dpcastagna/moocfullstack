@@ -49,12 +49,12 @@ const updatePatient = (id: string, entry: Entry) => {
 
   const updatedPatients = patients.filter(p => p.id !== id)
   
-  console.log('patients: ', patients);
+  // console.log('patients: ', patients);
 
   patients = updatedPatients;
   patients.push(updatedPatient);
   
-  console.log('updatedPatients: ', patients);
+  // console.log('updatedPatients: ', patients);
 
   return updatedPatient;
 }

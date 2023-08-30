@@ -59,22 +59,6 @@ const parseDiagnosisCodes = (object: unknown): Array<Diagnosis['code']> =>  {
   return object.diagnosisCodes as Array<Diagnosis['code']>;
 };
 
-const parseEntry = (entry: unknown): Entry => {
-  if (!entry || typeof entry !== 'object') {
-    throw new Error('Incorrect or missing entry');
-  }
-  if ('type' in entry) {
-    if (entry.type === 'HealthCheck' && 'healthCheckRating' in entry) {
-      return entry as Entry;
-    } else if (entry.type === 'Hospital' && 'discharge' in entry) {
-      return entry as Entry;
-    } else if (entry.type === 'OccupationalHealthcare' && 'employerName' in entry) {
-      return entry as Entry;
-    }
-  }
-  throw new Error('Incorrect or missing entry type');
-};
-
 const parseEntries = (entries: unknown): Entry[] => {
   if (!entries || typeof entries !== 'object' || !Array.isArray(entries)) {
     throw new Error('Incorrect or missing entries');
@@ -106,6 +90,22 @@ const toNewPatient = (object: unknown): NewPatient => {
   }
   console.log(object)
   throw new Error('Incorrect data: some fields are missing');
+};
+
+const parseEntry = (entry: unknown): Entry => {
+  if (!entry || typeof entry !== 'object') {
+    throw new Error('Incorrect or missing entry');
+  }
+  if ('type' in entry) {
+    if (entry.type === 'HealthCheck' && 'healthCheckRating' in entry) {
+      return entry as Entry;
+    } else if (entry.type === 'Hospital' && 'discharge' in entry) {
+      return entry as Entry;
+    } else if (entry.type === 'OccupationalHealthcare' && 'employerName' in entry) {
+      return entry as Entry;
+    }
+  }
+  throw new Error('Incorrect or missing entry type');
 };
 
 const toNewEntry = (object: unknown): Entry => {

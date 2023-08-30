@@ -1,14 +1,19 @@
 import { useState, SyntheticEvent, SetStateAction } from "react";
-
+import { useParams } from 'react-router-dom';
 import { TextField, /* InputLabel, MenuItem, Select, */ Grid, Button, /* SelectChangeEvent, */ Box, Typography } from '@mui/material';
 
-// import { /* PatientFormValues, */ HealthCheckFormValues, OccupationalHealthcareFormValues, HospitalFormValues, Gender } from "../../types";
+import axios from 'axios';
+import patientService from "../../services/patients";
 
-// interface AddEntryFormProps {
+import { /* PatientFormValues, */ /* HealthCheckFormValues, OccupationalHealthcareFormValues, */ HospitalFormValues, Entry/* , Gender  */} from "../../types";
+
+interface AddEntryFormProps {
 //   onCancel: () => void;
 //   onSubmit: (values: /* PatientFormValues | */ HealthCheckFormValues | OccupationalHealthcareFormValues | HospitalFormValues) => void;
 //   formType: '' | 'Hospital' | 'OccupationalHealthcare' | 'HealthCheck';
-// }
+  entries: Entry[];
+  setEntries: React.Dispatch<React.SetStateAction<Entry[]>>
+}
 
 interface BaseFormProps {
   description: string;
@@ -147,7 +152,7 @@ const HealthCheckForm = (/* {addEntry} */) => {
   )
 }
 
-const AddEntryForm = () => {
+const AddEntryForm = ({ entries, setEntries } : AddEntryFormProps) => {
   const [formType, setFormType] = useState<'' | 'Hospital' | 'OccupationalHealthcare' | 'HealthCheck'>('');
   const [description, setDescription] = useState<string>('');
   const [date, setDate] = useState<string>('');
@@ -160,6 +165,9 @@ const AddEntryForm = () => {
   const [employer, setEmployer] = useState<string>('');
   const [sickStart, setSickStart] = useState<string>('');
   const [sickEnd, setSickEnd] = useState<string>('');
+
+  const id = useParams().id as string;
+  const [error, setError] = useState<string>('');
 
   // const onGenderChange = (event: SelectChangeEvent<string>) => {
   //   event.preventDefault();
@@ -187,9 +195,9 @@ const AddEntryForm = () => {
     setSickEnd('');
   }
 
-  const onSubmit = () => {
-    console.log('submit');
-  };
+  // const onSubmit = () => {
+  //   console.log('submit');
+  // };
   const onCancel = () => {
     console.log('close');
     resetValues();
@@ -197,21 +205,44 @@ const AddEntryForm = () => {
   const formButtonClick = (t: typeof formType) => {
     setFormType(t);
   }
+  const submitNewEntry = async (values: HospitalFormValues) => {
+    console.log(values);
+    try {
+      const entry = await patientService.newEntry(id, values);
+      setEntries(entries.concat(entry));
+      // setModalOpen(false);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        if (e?.response?.data && typeof e?.response?.data === "string") {
+          const message = e.response.data.replace('Something went wrong. Error: ', '');
+          console.error(message);
+          setError(message);
+        } else {
+          setError("Unrecognized axios error");
+        }
+      } else {
+        console.error("Unknown error", e);
+        setError("Unknown error");
+      }
+      setTimeout(() => {
+        console.log("Delayed for 10 seconds.");
+        setError('');
+      }, 10000);
+    }
+  };
 
   const addEntry = (event: SyntheticEvent) => {
     event.preventDefault();
     if (formType !== '') {
       if (formType === 'Hospital') {
-        onSubmit(
-          // {
-          //   type: formType,
-          //   description,
-          //   date,
-          //   specialist,
-          //   diagnosisCodes,
-          //   discharge: {date: dischargeDate, criteria: dischargeCriteria}
-          // }
-        )
+        submitNewEntry({
+          type: formType,
+          description,
+          date,
+          specialist,
+          diagnosisCodes,
+          discharge: {date: dischargeDate, criteria: dischargeCriteria}
+        });
       }
     };
   };
@@ -254,6 +285,11 @@ const AddEntryForm = () => {
 
   return (
     <>
+      {
+        error !== ''
+        ? <>{error}</>
+        :<></>
+      }
       <Button 
         color="warning"
         style={{ float: "none", marginBottom: 10 }}

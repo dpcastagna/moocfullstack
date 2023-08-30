@@ -12,59 +12,70 @@ interface EntriesProps {
 }
 
 function assertNever(entry: never): import("react").ReactNode {
+  console.log(entry);
   throw new Error('Function not implemented.');
 }
 
 const SingleEntry = (props: {entry: Entry, diagnoses: Diagnosis[]}) => {
   const entry = props.entry;
   const diagnoses = props.diagnoses;
-  
-  return (
-    <span key={entry.id}>
-      <b>{entry.date}</b> &nbsp;
-      {
-        (() => {
-          switch (entry.type) {
-            case 'HealthCheck':
-              return  <>
-                        <MedicalServicesIcon /> <br/>
-                        <i>{entry.description}</i> <br/>
-                        <Heart num={entry.healthCheckRating} />
+
+  console.log(entry);
+  if ('type' in entry) {
+    return (
+      <span key={entry.id}>
+        <b>{entry.date}</b> &nbsp;
+        {
+          (() => {
+            switch (entry.type) {
+              case 'HealthCheck':
+                return  <>
+                          <MedicalServicesIcon /> <br/>
+                          <i>{entry.description}</i> <br/>
+                          <Heart num={entry.healthCheckRating} />
+                        </>
+              case 'OccupationalHealthcare':
+                return  <>
+                          <WorkIcon /> {entry.employerName} <br/>
+                          <i>{entry.description}</i>
+                        </>
+              case 'Hospital':
+                return <>
+                        <LocalHospitalIcon /> <br/>
+                        <i>{entry.description}</i><br/>
+                        {entry.discharge
+                        ? <>
+                            Discharge date: {entry.discharge.date}<br/>
+                            Discharge criteria: {entry.discharge.criteria}
+                          </>
+                        : <></>} 
                       </>
-            case 'OccupationalHealthcare':
-              return  <>
-                        <WorkIcon /> {entry.employerName} <br/>
-                        <i>{entry.description}</i>
-                      </>
-            case 'Hospital':
-              return <>
-                      <LocalHospitalIcon /> <br/>
-                      <i>{entry.description}</i>
-                    </>
-            default:
-              return assertNever(entry);
-          }
-          }
-        )()
-      }
-      <br/>
-      {
-        entry.diagnosisCodes
-        ? <ul>
-            {
-              entry.diagnosisCodes.map((code) => {
-                const diagnosis: Diagnosis = diagnoses?.find(d => d.code === code) as Diagnosis;
-                return (
-                  <li key={diagnosis.code}>{diagnosis.code} {diagnosis.name}</li>
-                )
-              })
+              default:
+                return assertNever(entry);
             }
-          </ul> 
-        : null
-      }
-      diagnose by {entry.specialist}
-    </span>
-  )
+            }
+          )()
+        }
+        <br/>
+        {
+          entry.diagnosisCodes && entry.diagnosisCodes.length > 0
+          ? <ul>
+              {
+                entry.diagnosisCodes.map((code) => {
+                  const diagnosis: Diagnosis = diagnoses?.find(d => d.code === code) as Diagnosis;
+                  return (
+                    <li key={diagnosis.code}>{diagnosis.code} {diagnosis.name}</li>
+                  )
+                })
+              }
+            </ul> 
+          : null
+        }
+        diagnose by {entry.specialist}
+      </span>
+    )
+  }
+  return <></>
 }
 
 const Entries = (props: EntriesProps) => {
