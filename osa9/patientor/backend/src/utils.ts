@@ -1,4 +1,4 @@
-import { NewPatient, Gender, Entry, Diagnosis } from './types';
+import { NewPatient, Gender, Entry, Diagnosis, Discharge } from './types';
 
 const isString = (text: unknown): text is string => {
   return typeof text === 'string' || text instanceof String;
@@ -92,14 +92,49 @@ const toNewPatient = (object: unknown): NewPatient => {
   throw new Error('Incorrect data: some fields are missing');
 };
 
+const parseDescription = (description: string): string => {
+  if (!description || !isString(description) || typeof description !== 'string') {
+    throw new Error('Incorrect or missing description');
+  }
+  if (description !== '') {
+    return description;
+  }
+  throw new Error('Description is empty!');
+}
+
+const parseSpecialist = (specialist: string): string => {
+  if (!specialist || !isString(specialist) || typeof specialist !== 'string') {
+    throw new Error('Incorrect or missing specialist');
+  }
+  if (specialist !== '') {
+    return specialist;
+  }
+  throw new Error('Specialist is empty!');
+}
+
+const parseDischarge = (object: unknown): Discharge => {
+  if ( !object || typeof object !== 'object' ) {
+    throw new Error('Incorrect or missing Discharge data');
+  }
+  if ('date' in object && 'criteria' in object && object.criteria !== '') {
+    parseDate(object.date);
+    return object as Discharge;
+  }
+  throw new Error('Incorrect Discharge data: some fields are missing');
+}
+
 const parseEntry = (entry: unknown): Entry => {
   if (!entry || typeof entry !== 'object') {
     throw new Error('Incorrect or missing entry');
   }
-  if ('type' in entry) {
+  if ('type' in entry && 'description' in entry && 'specialist' in entry && 'date' in entry) {
+    parseDescription(entry.description as string);
+    parseDate(entry.date);
+    parseSpecialist(entry.specialist as string);
     if (entry.type === 'HealthCheck' && 'healthCheckRating' in entry) {
       return entry as Entry;
     } else if (entry.type === 'Hospital' && 'discharge' in entry) {
+      parseDischarge(entry.discharge as Discharge);
       return entry as Entry;
     } else if (entry.type === 'OccupationalHealthcare' && 'employerName' in entry) {
       return entry as Entry;
@@ -113,12 +148,13 @@ const toNewEntry = (object: unknown): Entry => {
     throw new Error('Incorrect or missing data');
   }
   
+  console.log('toNewEntry: ', object);
+
   if ('specialist' in object && 'description' in object && 'date' in object) {
     const newEntry: Entry = parseEntry(object);
 
     return newEntry;
   }
-  console.log('toNewEntry: ', object);
   throw new Error('Incorrect data: some fields are missing');
 };
 

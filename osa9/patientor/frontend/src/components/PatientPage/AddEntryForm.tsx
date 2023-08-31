@@ -5,7 +5,7 @@ import { TextField, /* InputLabel, MenuItem, Select, */ Grid, Button, /* SelectC
 import axios from 'axios';
 import patientService from "../../services/patients";
 
-import { /* PatientFormValues, */ /* HealthCheckFormValues, OccupationalHealthcareFormValues, */ HospitalFormValues, Entry/* , Gender  */} from "../../types";
+import { HealthCheckFormValues, OccupationalHealthcareFormValues, HospitalFormValues, Entry/* , Gender  */} from "../../types";
 
 interface AddEntryFormProps {
 //   onCancel: () => void;
@@ -33,6 +33,11 @@ interface HospitalFormProps {
   setDischargeDate: (value: React.SetStateAction<string>) => void;
   dischargeCriteria: string;
   setDischargeCriteria: (value: React.SetStateAction<string>) => void;
+}
+
+interface HealthCheckFormProps {
+  rating: number;
+  setRating: (value: React.SetStateAction<0 | 1 | 2 | 3>) => void;
 }
 
 // interface GenderOption{
@@ -140,14 +145,18 @@ const OccupationalHealthcareForm = () => {
   )
 }
 
-const HealthCheckForm = (/* {addEntry} */) => {
+const HealthCheckForm = ({rating, setRating}: HealthCheckFormProps) => {
 
   return (
     <>
-      
-      {/* <form onSubmit={addEntry}>
-        <BaseForm />
-      </form> */}
+      <TextField
+        label="Healthcheck Rating"
+        type='number'
+        InputProps={{ inputProps: { min: 0, max: 3  } }}
+        // fullWidth
+        value={rating}
+        onChange={({ target }) => setRating(target.value as unknown as 0 | 1 | 2 | 3)}
+      />
     </>
   )
 }
@@ -205,12 +214,13 @@ const AddEntryForm = ({ entries, setEntries } : AddEntryFormProps) => {
   const formButtonClick = (t: typeof formType) => {
     setFormType(t);
   }
-  const submitNewEntry = async (values: HospitalFormValues) => {
+  const submitNewEntry = async (values: HospitalFormValues | OccupationalHealthcareFormValues | HealthCheckFormValues) => {
     console.log(values);
     try {
       const entry = await patientService.newEntry(id, values);
       setEntries(entries.concat(entry));
       // setModalOpen(false);
+      resetValues();
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
         if (e?.response?.data && typeof e?.response?.data === "string") {
@@ -225,7 +235,7 @@ const AddEntryForm = ({ entries, setEntries } : AddEntryFormProps) => {
         setError("Unknown error");
       }
       setTimeout(() => {
-        console.log("Delayed for 10 seconds.");
+        console.log("Error displayed for 10 seconds.");
         setError('');
       }, 10000);
     }
@@ -241,8 +251,33 @@ const AddEntryForm = ({ entries, setEntries } : AddEntryFormProps) => {
           date,
           specialist,
           diagnosisCodes,
-          discharge: {date: dischargeDate, criteria: dischargeCriteria}
+          discharge: { date: dischargeDate, criteria: dischargeCriteria }
         });
+      }
+      switch (formType) {
+        case 'OccupationalHealthcare':
+          submitNewEntry({
+            type: formType,
+            description,
+            date,
+            specialist,
+            diagnosisCodes,
+            employerName: employer,
+            sickLeave: { startDate: sickStart, endDate: sickEnd }
+          })
+          break
+        case 'HealthCheck':
+          submitNewEntry({
+            type: formType,
+            description,
+            date,
+            specialist,
+            diagnosisCodes,
+            healthCheckRating: rating
+          })
+          break
+        default:
+          return null
       }
     };
   };
@@ -287,7 +322,20 @@ const AddEntryForm = ({ entries, setEntries } : AddEntryFormProps) => {
     <>
       {
         error !== ''
-        ? <>{error}</>
+        ? <Box sx={{
+          display: 'flex',
+          backgroundColor: 'orange',
+          paddingTop: 1,
+          paddingLeft: 1,
+          paddingRight: 1,
+          paddingBottom: 1,
+          // border: 'dashed',
+          borderWidth: 2,
+          borderRadius: 1,
+          marginBottom: 1
+        }}>
+            {error}
+          </Box>
         :<></>
       }
       <Button 
@@ -314,7 +362,7 @@ const AddEntryForm = ({ entries, setEntries } : AddEntryFormProps) => {
         <div>
           <form onSubmit={addEntry}>
           <Typography align="left" variant="h5">
-            <b>
+            <>
               New {formType} Entry
               <BaseForm description={description} setDescription={function (value: SetStateAction<string>): void {
                 setDescription(value);
@@ -343,13 +391,15 @@ const AddEntryForm = ({ entries, setEntries } : AddEntryFormProps) => {
                     </>
                   case 'HealthCheck':
                     return  <>
-                      <HealthCheckForm />
+                      <HealthCheckForm rating={rating} setRating={function (value: SetStateAction<0 | 1 | 2 | 3>): void {
+                        setRating(value);
+                      } }/>
                     </>
                   default:
                     return <></>
                 }
               })()}
-            </b>
+            </>
           </Typography>
             {/* <TextField
               label="Description"

@@ -36,7 +36,7 @@ const PatientPage = () => {
       };
     };
     fetchData();
-  }, [id]);
+  }, [id, entries?.length]);
 
   // const onSubmit = () => {
   //   console.log('submit');

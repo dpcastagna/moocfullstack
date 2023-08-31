@@ -63,6 +63,7 @@ const SingleEntry = (props: {entry: Entry, diagnoses: Diagnosis[]}) => {
               {
                 entry.diagnosisCodes.map((code) => {
                   const diagnosis: Diagnosis = diagnoses?.find(d => d.code === code) as Diagnosis;
+                  if (!diagnosis) return null
                   return (
                     <li key={diagnosis.code}>{diagnosis.code} {diagnosis.name}</li>
                   )
