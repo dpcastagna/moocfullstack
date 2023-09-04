@@ -1,7 +1,7 @@
 import patientData from '../../data/patients';
 import { v1 as uuid } from 'uuid';
 
-import { Patient, PatientWithoutSsn, NewPatient, Entry } from '../types';
+import { Patient, PatientWithoutSsn, NewPatient, /* Entry, */ EntryWithoutId } from '../types';
 
 let patients: Patient[] = patientData;
 
@@ -35,7 +35,7 @@ const addPatient = (patient: NewPatient) => {
   return newPatient;
 };
 
-const updatePatient = (id: string, entry: Entry) => {
+const updatePatient = (id: string, entry: EntryWithoutId) => {
   const patientToUpdate = patients.find(p => p.id === id);
   if (!patientToUpdate) {
     return undefined;

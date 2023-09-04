@@ -37,7 +37,7 @@ router.post('/', (req, res) => {
 router.post('/:id/entries', (req,res) => {
   try {
     const id = req.params.id;
-
+    console.log('req.body: ', req.body);
     const newEntry = utils.toNewEntry(req.body);
 
     const newDiagnosisCodes = utils.parseDiagnosisCodes({ diagnosisCodes: newEntry.diagnosisCodes });

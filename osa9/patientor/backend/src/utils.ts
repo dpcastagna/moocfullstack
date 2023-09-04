@@ -1,4 +1,4 @@
-import { NewPatient, Gender, Entry, Diagnosis, Discharge } from './types';
+import { NewPatient, Gender, Entry, EntryWithoutId, Diagnosis, Discharge, HealthCheckRating } from './types';
 
 const isString = (text: unknown): text is string => {
   return typeof text === 'string' || text instanceof String;
@@ -113,7 +113,7 @@ const parseSpecialist = (specialist: string): string => {
 }
 
 const parseDischarge = (object: unknown): Discharge => {
-  if ( !object || typeof object !== 'object' ) {
+  if (!object || typeof object !== 'object') {
     throw new Error('Incorrect or missing Discharge data');
   }
   if ('date' in object && 'criteria' in object && object.criteria !== '') {
@@ -123,27 +123,64 @@ const parseDischarge = (object: unknown): Discharge => {
   throw new Error('Incorrect Discharge data: some fields are missing');
 }
 
-const parseEntry = (entry: unknown): Entry => {
+const isHealthCheckEntry = (param: number): param is HealthCheckRating => {
+  console.log(param, typeof param);
+  return Object.values(HealthCheckRating).map(v => v as number).includes(param);
+};
+
+const parseHealthCheckRating = (num: number): HealthCheckRating => {
+  if(!isHealthCheckEntry(num) || typeof num !== 'number') {
+    console.log(num, typeof num);
+    throw new Error('Incorrect or missing HealthCheckRating data');
+  }
+  if (typeof num === 'number' && isHealthCheckEntry(num)) {
+    return Number(num as HealthCheckRating);
+  }
+  throw new Error('Incorrect HealthCheckRating data');
+}
+
+const parseEntry = (entry: unknown): EntryWithoutId => {
   if (!entry || typeof entry !== 'object') {
     throw new Error('Incorrect or missing entry');
   }
+  
   if ('type' in entry && 'description' in entry && 'specialist' in entry && 'date' in entry) {
-    parseDescription(entry.description as string);
-    parseDate(entry.date);
-    parseSpecialist(entry.specialist as string);
-    if (entry.type === 'HealthCheck' && 'healthCheckRating' in entry) {
-      return entry as Entry;
-    } else if (entry.type === 'Hospital' && 'discharge' in entry) {
-      parseDischarge(entry.discharge as Discharge);
-      return entry as Entry;
-    } else if (entry.type === 'OccupationalHealthcare' && 'employerName' in entry) {
-      return entry as Entry;
-    }
+    // if ('diagnosisCodes' in entry ) {
+      parseDescription(entry.description as string);
+      parseDate(entry.date);
+      parseSpecialist(entry.specialist as string);
+      if (entry.type === 'HealthCheck' && 'healthCheckRating' in entry) {
+        parseHealthCheckRating(Number(entry.healthCheckRating));
+        if ('diagnosisCodes' in entry) {
+          return {
+            description: entry.description as string,
+            date: entry.date as string,
+            specialist: entry.specialist as string,
+            type: entry.type,
+            healthCheckRating: Number(entry.healthCheckRating),
+            diagnosisCodes: entry.diagnosisCodes as Array<Diagnosis['code']>,
+          };
+        }
+        return {
+          description: entry.description as string,
+          date: entry.date as string,
+          specialist: entry.specialist as string,
+          type: entry.type,
+          healthCheckRating: Number(entry.healthCheckRating),
+        };
+      } else if (entry.type === 'Hospital' && 'discharge' in entry) {
+        parseDischarge(entry.discharge as Discharge);
+        return entry as Entry;
+      } else if (entry.type === 'OccupationalHealthcare' && 'employerName' in entry) {
+        return entry as Entry;
+      }
+    // }
   }
+
   throw new Error('Incorrect or missing entry type');
 };
 
-const toNewEntry = (object: unknown): Entry => {
+const toNewEntry = (object: unknown): EntryWithoutId => {
   if ( !object || typeof object !== 'object' ) {
     throw new Error('Incorrect or missing data');
   }
@@ -151,7 +188,7 @@ const toNewEntry = (object: unknown): Entry => {
   console.log('toNewEntry: ', object);
 
   if ('specialist' in object && 'description' in object && 'date' in object) {
-    const newEntry: Entry = parseEntry(object);
+    const newEntry: EntryWithoutId = parseEntry(object);
 
     return newEntry;
   }

@@ -153,7 +153,7 @@ const HealthCheckForm = ({rating, setRating}: HealthCheckFormProps) => {
         label="Healthcheck Rating"
         type='number'
         InputProps={{ inputProps: { min: 0, max: 3  } }}
-        // fullWidth
+        fullWidth
         value={rating}
         onChange={({ target }) => setRating(target.value as unknown as 0 | 1 | 2 | 3)}
       />
