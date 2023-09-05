@@ -76,7 +76,7 @@ const PatientPage = () => {
         </Typography>
         <br/>
         
-        <AddEntryForm entries={entries as Entry[]} setEntries={setEntries as React.Dispatch<React.SetStateAction<Entry[]>>} />
+        <AddEntryForm entries={entries as Entry[]} setEntries={setEntries as React.Dispatch<React.SetStateAction<Entry[]>>} diagnoses={diagnoses as Diagnosis[]} />
 
         { entries && entries.length > 0
           ? <Entries entries={entries} diagnoses={diagnoses as Diagnosis[]} />

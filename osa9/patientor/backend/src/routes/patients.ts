@@ -37,11 +37,11 @@ router.post('/', (req, res) => {
 router.post('/:id/entries', (req,res) => {
   try {
     const id = req.params.id;
-    console.log('req.body: ', req.body);
+    console.log('router.post req.body: ', req.body);
     const newEntry = utils.toNewEntry(req.body);
 
     const newDiagnosisCodes = utils.parseDiagnosisCodes({ diagnosisCodes: newEntry.diagnosisCodes });
-    console.log('post newEntry: ', newEntry, newDiagnosisCodes);
+    console.log('router.post newEntry: ', newEntry, newDiagnosisCodes);
     
     const addedEntry = patientService.updatePatient(id, newEntry);
     res.json(addedEntry);

@@ -53,6 +53,7 @@ const parseOccupation = (occupation: unknown): string => {
 const parseDiagnosisCodes = (object: unknown): Array<Diagnosis['code']> =>  {
   if (!object || typeof object !== 'object' || !('diagnosisCodes' in object)) {
     // we will just trust the data to be in correct form
+    console.log('parsediagnosiscodes: ', object);
     return [] as Array<Diagnosis['code']>;
   }
 
@@ -124,16 +125,17 @@ const parseDischarge = (object: unknown): Discharge => {
 }
 
 const isHealthCheckEntry = (param: number): param is HealthCheckRating => {
-  console.log(param, typeof param);
+  // console.log('isHealthCheckRating param: ', param, typeof param);
   return Object.values(HealthCheckRating).map(v => v as number).includes(param);
 };
 
 const parseHealthCheckRating = (num: number): HealthCheckRating => {
   if(!isHealthCheckEntry(num) || typeof num !== 'number') {
-    console.log(num, typeof num);
+    // console.log(num, typeof num);
     throw new Error('Incorrect or missing HealthCheckRating data');
   }
   if (typeof num === 'number' && isHealthCheckEntry(num)) {
+    // console.log('parserating: ', num, typeof num);
     return Number(num as HealthCheckRating);
   }
   throw new Error('Incorrect HealthCheckRating data');
@@ -145,36 +147,36 @@ const parseEntry = (entry: unknown): EntryWithoutId => {
   }
   
   if ('type' in entry && 'description' in entry && 'specialist' in entry && 'date' in entry) {
-    // if ('diagnosisCodes' in entry ) {
-      parseDescription(entry.description as string);
-      parseDate(entry.date);
-      parseSpecialist(entry.specialist as string);
-      if (entry.type === 'HealthCheck' && 'healthCheckRating' in entry) {
-        parseHealthCheckRating(Number(entry.healthCheckRating));
-        if ('diagnosisCodes' in entry) {
-          return {
-            description: entry.description as string,
-            date: entry.date as string,
-            specialist: entry.specialist as string,
-            type: entry.type,
-            healthCheckRating: Number(entry.healthCheckRating),
-            diagnosisCodes: entry.diagnosisCodes as Array<Diagnosis['code']>,
-          };
-        }
+    // parseDescription(entry.description as string);
+    // parseDate(entry.date);
+    // parseSpecialist(entry.specialist as string);
+    if (entry.type === 'HealthCheck' && 'healthCheckRating' in entry) {
+      console.log('parseEntry: ', entry, entry.healthCheckRating as number, typeof entry.healthCheckRating)
+      // parseHealthCheckRating(Number(entry.healthCheckRating));
+      if ('diagnosisCodes' in entry) {
         return {
-          description: entry.description as string,
-          date: entry.date as string,
-          specialist: entry.specialist as string,
+          description: parseDescription(entry.description as string),
+          date: parseDate(entry.date),
+          specialist: parseSpecialist(entry.specialist as string),
           type: entry.type,
-          healthCheckRating: Number(entry.healthCheckRating),
-        };
-      } else if (entry.type === 'Hospital' && 'discharge' in entry) {
-        parseDischarge(entry.discharge as Discharge);
-        return entry as Entry;
-      } else if (entry.type === 'OccupationalHealthcare' && 'employerName' in entry) {
-        return entry as Entry;
+          healthCheckRating: parseHealthCheckRating(Number(entry.healthCheckRating)),
+          diagnosisCodes: parseDiagnosisCodes(entry),
+        } as EntryWithoutId;
       }
-    // }
+      return {
+        description: parseDescription(entry.description as string),
+        date: parseDate(entry.date),
+        specialist: parseSpecialist(entry.specialist as string),
+        type: entry.type,
+        healthCheckRating: parseHealthCheckRating(Number(entry.healthCheckRating)),
+        diagnosisCodes: parseDiagnosisCodes([]),
+      } as EntryWithoutId;
+    } else if (entry.type === 'Hospital' && 'discharge' in entry) {
+      parseDischarge(entry.discharge as Discharge);
+      return entry as Entry;
+    } else if (entry.type === 'OccupationalHealthcare' && 'employerName' in entry) {
+      return entry as Entry;
+    }
   }
 
   throw new Error('Incorrect or missing entry type');

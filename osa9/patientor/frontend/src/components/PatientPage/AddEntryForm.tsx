@@ -1,18 +1,19 @@
 import { useState, SyntheticEvent, SetStateAction } from "react";
 import { useParams } from 'react-router-dom';
-import { TextField, /* InputLabel, MenuItem, Select, */ Grid, Button, /* SelectChangeEvent, */ Box, Typography } from '@mui/material';
+import { TextField, InputLabel, MenuItem, Select, Grid, Button, /* SelectChangeEvent, */ Box, Typography } from '@mui/material';
 
 import axios from 'axios';
 import patientService from "../../services/patients";
 
-import { HealthCheckFormValues, OccupationalHealthcareFormValues, HospitalFormValues, Entry/* , Gender  */} from "../../types";
+import { HealthCheckFormValues, OccupationalHealthcareFormValues, HospitalFormValues, Entry, Diagnosis/* , Gender  */} from "../../types";
 
 interface AddEntryFormProps {
 //   onCancel: () => void;
 //   onSubmit: (values: /* PatientFormValues | */ HealthCheckFormValues | OccupationalHealthcareFormValues | HospitalFormValues) => void;
 //   formType: '' | 'Hospital' | 'OccupationalHealthcare' | 'HealthCheck';
   entries: Entry[];
-  setEntries: React.Dispatch<React.SetStateAction<Entry[]>>
+  setEntries: React.Dispatch<React.SetStateAction<Entry[]>>;
+  diagnoses: Diagnosis[];
 }
 
 interface BaseFormProps {
@@ -26,6 +27,7 @@ interface BaseFormProps {
   setDiagnosisCodes: (value: React.SetStateAction<string[]>) => void;
   newCode: string;
   setNewCode: (value: React.SetStateAction<string>) => void;
+  diagnoses: Diagnosis[]
 }
 
 interface HospitalFormProps {
@@ -59,14 +61,17 @@ const BaseForm = ({
     diagnosisCodes,
     setDiagnosisCodes,
     newCode,
-    setNewCode
+    setNewCode,
+    diagnoses,
   }: BaseFormProps) => {
   
   const addCode = () => {
-    const newCodes = diagnosisCodes.concat(newCode);
-    setDiagnosisCodes(newCodes);
-    // console.log(newCode, diagnosisCodes);
-    setNewCode('');
+    if (newCode !== '') {
+      const newCodes = diagnosisCodes.concat(newCode);
+      setDiagnosisCodes(newCodes);
+      // console.log(newCode, diagnosisCodes);
+      setNewCode('');
+    }
   };
   
   return (
@@ -77,8 +82,10 @@ const BaseForm = ({
         value={description}
         onChange={({ target }) => setDescription(target.value)}
       />
+      <InputLabel style={{ marginTop: 10 }}>Date</InputLabel>
       <TextField
-        label="Date"
+        type="date"
+        // label="Date"
         placeholder="YYYY-MM-DD"
         // fullWidth
         value={date}
@@ -90,12 +97,28 @@ const BaseForm = ({
         value={specialist}
         onChange={({ target }) => setSpecialist(target.value)}
       />
-      <TextField
+      {/* <TextField
         label="Add diagnosis code"
         fullWidth
         value={newCode}
         onChange={({ target }) => setNewCode(target.value)}
-      />
+      /> */}
+      <InputLabel style={{ marginTop: 10 }}>Add diagnosis code</InputLabel>
+      <Select
+          label="Diagnosis code"
+          fullWidth
+          value={newCode}
+          onChange={({ target }) => setNewCode(target.value)}
+        >
+        {diagnoses.map(option =>
+          <MenuItem
+            key={option.code}
+            value={option.code}
+          >
+            {option.code} {option.name}
+          </MenuItem>
+        )}
+        </Select>
       <Button
         color="secondary"
         style={{ float: "none" }}
@@ -116,8 +139,10 @@ const HospitalForm = ({ dischargeDate, setDischargeDate, dischargeCriteria, setD
 
   return (
     <>
+      <InputLabel style={{ marginTop: 10 }}>Discharge date</InputLabel>
       <TextField
-        label="Discharge Date"
+        type="date"
+        // label="Discharge Date"
         placeholder="YYYY-MM-DD"
         // fullWidth
         value={dischargeDate}
@@ -150,6 +175,7 @@ const HealthCheckForm = ({rating, setRating}: HealthCheckFormProps) => {
   return (
     <>
       <TextField
+        style={{ marginTop: 10 }}
         label="Healthcheck Rating"
         type='number'
         InputProps={{ inputProps: { min: 0, max: 3  } }}
@@ -161,7 +187,7 @@ const HealthCheckForm = ({rating, setRating}: HealthCheckFormProps) => {
   )
 }
 
-const AddEntryForm = ({ entries, setEntries } : AddEntryFormProps) => {
+const AddEntryForm = ({ entries, setEntries, diagnoses } : AddEntryFormProps) => {
   const [formType, setFormType] = useState<'' | 'Hospital' | 'OccupationalHealthcare' | 'HealthCheck'>('');
   const [description, setDescription] = useState<string>('');
   const [date, setDate] = useState<string>('');
@@ -244,16 +270,16 @@ const AddEntryForm = ({ entries, setEntries } : AddEntryFormProps) => {
   const addEntry = (event: SyntheticEvent) => {
     event.preventDefault();
     if (formType !== '') {
-      if (formType === 'Hospital') {
-        submitNewEntry({
-          type: formType,
-          description,
-          date,
-          specialist,
-          diagnosisCodes,
-          discharge: { date: dischargeDate, criteria: dischargeCriteria }
-        });
-      }
+      // if (formType === 'Hospital') {
+      //   submitNewEntry({
+      //     type: formType,
+      //     description,
+      //     date,
+      //     specialist,
+      //     diagnosisCodes,
+      //     discharge: { date: dischargeDate, criteria: dischargeCriteria }
+      //   });
+      // }
       switch (formType) {
         case 'OccupationalHealthcare':
           submitNewEntry({
@@ -276,8 +302,18 @@ const AddEntryForm = ({ entries, setEntries } : AddEntryFormProps) => {
             healthCheckRating: rating
           })
           break
+        case 'Hospital':
+          submitNewEntry({
+            type: formType,
+            description,
+            date,
+            specialist,
+            diagnosisCodes,
+            discharge: { date: dischargeDate, criteria: dischargeCriteria }
+          });
+          break;
         default:
-          return null
+          return <></>
       }
     };
   };
@@ -349,7 +385,8 @@ const AddEntryForm = ({ entries, setEntries } : AddEntryFormProps) => {
         Cancel New Entry
       </Button>
       <Box sx={{
-        display: 'flex',
+        // width: "100%",
+        display: 'grid',
         paddingTop: 1,
         paddingLeft: 1,
         paddingRight: 1,
@@ -360,7 +397,7 @@ const AddEntryForm = ({ entries, setEntries } : AddEntryFormProps) => {
         marginBottom: 1
       }}>
         <div>
-          <form onSubmit={addEntry}>
+          <form onSubmit={addEntry} style={{width: "100%"}}>
           <Typography align="left" variant="h5">
             <>
               New {formType} Entry
@@ -374,7 +411,7 @@ const AddEntryForm = ({ entries, setEntries } : AddEntryFormProps) => {
                 setDiagnosisCodes(value);
               } } newCode={newCode} setNewCode={function (value: SetStateAction<string>): void {
                 setNewCode(value);
-              } }/>
+              } } diagnoses={diagnoses}/>
               {(() => {
                 switch (formType) {
                   case 'Hospital':
