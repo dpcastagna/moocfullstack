@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { Box, /* Table, Button, TableHead, */ Typography, /* Button, TableCell, TableRow, TableBody  */} from '@mui/material';
-// import axios from 'axios';
+import { Box, Typography } from '@mui/material';
 
-import { /* PatientFormValues, */ Patient, Entry, Diagnosis } from "../../types";
+import { Patient, Entry, Diagnosis } from "../../types";
 
 import patientService from "../../services/patients";
 import diagnosisService from '../../services/diagnoses'
@@ -19,7 +18,6 @@ const PatientPage = () => {
   const [patient, setPatient] = useState<Patient>();
   const [entries, setEntries] = useState<Entry[]>();
   const [diagnoses,setDiagnoses] = useState<Diagnosis[]>();
-  // const [formType, setFormType] = useState<'' | 'Hospital' | 'OccupationalHealthcare' | 'HealthCheck'>('');
   const id: string | undefined = useParams().id as string;
   
   useEffect(() => {
@@ -37,18 +35,6 @@ const PatientPage = () => {
     };
     fetchData();
   }, [id, entries?.length]);
-
-  // const onSubmit = () => {
-  //   console.log('submit');
-  // };
-  // const onClose = () => {
-  //   console.log('close');
-  //   setFormType('');
-  // };
-  // const formButtonClick = (num: typeof formType) => {
-  //   setFormType(num);
-  // }
-  // console.log(patient, entries, diagnoses, formType);
 
   if (!patient) {
     return <div>Loading...</div>

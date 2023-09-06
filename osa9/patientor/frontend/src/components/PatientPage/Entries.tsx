@@ -38,6 +38,14 @@ const SingleEntry = (props: {entry: Entry, diagnoses: Diagnosis[]}) => {
                 return  <>
                           <WorkIcon /> {entry.employerName} <br/>
                           <i>{entry.description}</i>
+                          {entry.sickLeave && entry.sickLeave.startDate !== '' && entry.sickLeave.endDate !== ''
+                        ? <>
+                            <br/><strong>Sick leave:</strong><br/>
+                            Start date: {entry.sickLeave.startDate}<br/>
+                            End date: {entry.sickLeave.endDate}
+                          </>
+                        : null
+                        } 
                         </>
               case 'Hospital':
                 return <>
@@ -59,17 +67,20 @@ const SingleEntry = (props: {entry: Entry, diagnoses: Diagnosis[]}) => {
         <br/>
         {
           entry.diagnosisCodes && entry.diagnosisCodes.length > 0
-          ? <ul>
-              {
-                entry.diagnosisCodes.map((code) => {
-                  const diagnosis: Diagnosis = diagnoses?.find(d => d.code === code) as Diagnosis;
-                  if (!diagnosis) return null
-                  return (
-                    <li key={diagnosis.code}>{diagnosis.code} {diagnosis.name}</li>
-                  )
-                })
-              }
-            </ul> 
+          ? <>
+              <strong>Diagnoses:</strong>
+              <ul>
+                {
+                  entry.diagnosisCodes.map((code) => {
+                    const diagnosis: Diagnosis = diagnoses?.find(d => d.code === code) as Diagnosis;
+                    if (!diagnosis) return null
+                    return (
+                      <li key={diagnosis.code}>{diagnosis.code} {diagnosis.name}</li>
+                    )
+                  })
+                }
+              </ul> 
+            </>
           : null
         }
         diagnose by {entry.specialist}

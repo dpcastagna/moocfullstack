@@ -1,6 +1,8 @@
 import { useState, SyntheticEvent, SetStateAction } from "react";
 import { useParams } from 'react-router-dom';
-import { TextField, InputLabel, MenuItem, Select, Grid, Button, /* SelectChangeEvent, */ Box, Typography } from '@mui/material';
+import { TextField, InputLabel, MenuItem, Select, Grid, Button, SelectChangeEvent, Box, Typography } from '@mui/material';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import ErrorIcon from '@mui/icons-material/Error';
 
 import axios from 'axios';
 import patientService from "../../services/patients";
@@ -8,13 +10,10 @@ import patientService from "../../services/patients";
 import { HealthCheckFormValues, OccupationalHealthcareFormValues, HospitalFormValues, Entry, Diagnosis/* , Gender  */} from "../../types";
 
 interface AddEntryFormProps {
-//   onCancel: () => void;
-//   onSubmit: (values: /* PatientFormValues | */ HealthCheckFormValues | OccupationalHealthcareFormValues | HospitalFormValues) => void;
-//   formType: '' | 'Hospital' | 'OccupationalHealthcare' | 'HealthCheck';
   entries: Entry[];
   setEntries: React.Dispatch<React.SetStateAction<Entry[]>>;
   diagnoses: Diagnosis[];
-}
+};
 
 interface BaseFormProps {
   description: string;
@@ -28,28 +27,28 @@ interface BaseFormProps {
   newCode: string;
   setNewCode: (value: React.SetStateAction<string>) => void;
   diagnoses: Diagnosis[]
-}
+};
 
 interface HospitalFormProps {
   dischargeDate: string;
   setDischargeDate: (value: React.SetStateAction<string>) => void;
   dischargeCriteria: string;
   setDischargeCriteria: (value: React.SetStateAction<string>) => void;
-}
+};
 
 interface HealthCheckFormProps {
   rating: number;
   setRating: (value: React.SetStateAction<0 | 1 | 2 | 3>) => void;
-}
+};
 
-// interface GenderOption{
-//   value: Gender;
-//   label: string;
-// }
-
-// const genderOptions: GenderOption[] = Object.values(Gender).map(v => ({
-//   value: v, label: v.toString()
-// }));
+interface OccupationalHealthcareFormProps {
+  employer: string;
+  setEmployer: (value: React.SetStateAction<string>) => void;
+  sickStart: string;
+  setSickStart: (value: React.SetStateAction<string>) => void;
+  sickEnd: string;
+  setSickEnd: (value: React.SetStateAction<string>) => void;
+};
 
 const BaseForm = ({
     description,
@@ -65,13 +64,14 @@ const BaseForm = ({
     diagnoses,
   }: BaseFormProps) => {
   
-  const addCode = () => {
-    if (newCode !== '') {
-      const newCodes = diagnosisCodes.concat(newCode);
-      setDiagnosisCodes(newCodes);
-      // console.log(newCode, diagnosisCodes);
-      setNewCode('');
-    }
+  const handleChange = (event: SelectChangeEvent<typeof diagnosisCodes>) => {
+    const {
+      target: { value },
+    } = event;
+    setDiagnosisCodes(
+      // On autofill we get a stringified value.
+      typeof value === 'string' ? value.split(',') : value,
+    );
   };
   
   return (
@@ -85,9 +85,7 @@ const BaseForm = ({
       <InputLabel style={{ marginTop: 10 }}>Date</InputLabel>
       <TextField
         type="date"
-        // label="Date"
         placeholder="YYYY-MM-DD"
-        // fullWidth
         value={date}
         onChange={({ target }) => setDate(target.value)}
       />
@@ -97,39 +95,24 @@ const BaseForm = ({
         value={specialist}
         onChange={({ target }) => setSpecialist(target.value)}
       />
-      {/* <TextField
-        label="Add diagnosis code"
-        fullWidth
-        value={newCode}
-        onChange={({ target }) => setNewCode(target.value)}
-      /> */}
-      <InputLabel style={{ marginTop: 10 }}>Add diagnosis code</InputLabel>
+      <InputLabel style={{ marginTop: 10 }}>Diagnosis codes</InputLabel>
       <Select
           label="Diagnosis code"
           fullWidth
-          value={newCode}
-          onChange={({ target }) => setNewCode(target.value)}
+          multiple
+          value={diagnosisCodes}
+          onChange={handleChange}
+          input={<OutlinedInput label="Name" />}
         >
         {diagnoses.map(option =>
           <MenuItem
             key={option.code}
             value={option.code}
           >
-            {option.code} {option.name}
+            {option.code}
           </MenuItem>
         )}
-        </Select>
-      <Button
-        color="secondary"
-        style={{ float: "none" }}
-        type="button"
-        variant="contained"
-        onClick={() => {addCode()}}
-      >
-        Add diagnosis code
-      </Button>
-      <br/>
-      Diagnosis codes: {diagnosisCodes.join(', ')}
+      </Select>
       <br/>
     </>
   )
@@ -142,9 +125,7 @@ const HospitalForm = ({ dischargeDate, setDischargeDate, dischargeCriteria, setD
       <InputLabel style={{ marginTop: 10 }}>Discharge date</InputLabel>
       <TextField
         type="date"
-        // label="Discharge Date"
         placeholder="YYYY-MM-DD"
-        // fullWidth
         value={dischargeDate}
         onChange={({ target }) => setDischargeDate(target.value)}
       />
@@ -158,14 +139,30 @@ const HospitalForm = ({ dischargeDate, setDischargeDate, dischargeCriteria, setD
   )
 }
 
-const OccupationalHealthcareForm = () => {
+const OccupationalHealthcareForm = ({ employer, setEmployer, sickStart, setSickStart, sickEnd, setSickEnd }: OccupationalHealthcareFormProps) => {
 
   return (
     <>
-      
-      {/* <form onSubmit={addEntry}>
-        <BaseForm />
-      </form> */}
+      <TextField
+      label="Employer"
+      fullWidth
+      value={employer}
+      onChange={({ target }) => setEmployer(target.value)}
+      />
+      <InputLabel style={{ marginTop: 10 }}>Sick leave start</InputLabel>
+      <TextField
+        type="date"
+        placeholder="YYYY-MM-DD"
+        value={sickStart}
+        onChange={({ target }) => setSickStart(target.value)}
+      />
+      <InputLabel style={{ marginTop: 10 }}>Sick leave end</InputLabel>
+      <TextField
+        type="date"
+        placeholder="YYYY-MM-DD"
+        value={sickEnd}
+        onChange={({ target }) => setSickEnd(target.value)}
+      />
     </>
   )
 }
@@ -204,17 +201,6 @@ const AddEntryForm = ({ entries, setEntries, diagnoses } : AddEntryFormProps) =>
   const id = useParams().id as string;
   const [error, setError] = useState<string>('');
 
-  // const onGenderChange = (event: SelectChangeEvent<string>) => {
-  //   event.preventDefault();
-  //   if ( typeof event.target.value === "string") {
-  //     const value = event.target.value;
-  //     const gender = Object.values(Gender).find(g => g.toString() === value);
-  //     if (gender) {
-  //       setGender(gender);
-  //     }
-  //   }
-  // };
-
   const resetValues = () => {
     setFormType('');
     setDescription('');
@@ -230,9 +216,6 @@ const AddEntryForm = ({ entries, setEntries, diagnoses } : AddEntryFormProps) =>
     setSickEnd('');
   }
 
-  // const onSubmit = () => {
-  //   console.log('submit');
-  // };
   const onCancel = () => {
     console.log('close');
     resetValues();
@@ -245,7 +228,6 @@ const AddEntryForm = ({ entries, setEntries, diagnoses } : AddEntryFormProps) =>
     try {
       const entry = await patientService.newEntry(id, values);
       setEntries(entries.concat(entry));
-      // setModalOpen(false);
       resetValues();
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
@@ -270,16 +252,6 @@ const AddEntryForm = ({ entries, setEntries, diagnoses } : AddEntryFormProps) =>
   const addEntry = (event: SyntheticEvent) => {
     event.preventDefault();
     if (formType !== '') {
-      // if (formType === 'Hospital') {
-      //   submitNewEntry({
-      //     type: formType,
-      //     description,
-      //     date,
-      //     specialist,
-      //     diagnosisCodes,
-      //     discharge: { date: dischargeDate, criteria: dischargeCriteria }
-      //   });
-      // }
       switch (formType) {
         case 'OccupationalHealthcare':
           submitNewEntry({
@@ -317,7 +289,7 @@ const AddEntryForm = ({ entries, setEntries, diagnoses } : AddEntryFormProps) =>
       }
     };
   };
-  
+  //Lomakkeen tyyppiä ei valittu
   if (formType === '') {
     return (
       <Box>
@@ -353,7 +325,7 @@ const AddEntryForm = ({ entries, setEntries, diagnoses } : AddEntryFormProps) =>
       </Box>
     )
   }
-
+  //Lomakkeen tyyppi valittu
   return (
     <>
       {
@@ -370,7 +342,7 @@ const AddEntryForm = ({ entries, setEntries, diagnoses } : AddEntryFormProps) =>
           borderRadius: 1,
           marginBottom: 1
         }}>
-            {error}
+            <ErrorIcon /> {error}
           </Box>
         :<></>
       }
@@ -424,7 +396,13 @@ const AddEntryForm = ({ entries, setEntries, diagnoses } : AddEntryFormProps) =>
                     </>
                   case 'OccupationalHealthcare':
                     return  <>
-                      <OccupationalHealthcareForm />
+                      <OccupationalHealthcareForm employer={employer} setEmployer={function (value: SetStateAction<string>): void {
+                        setEmployer(value);
+                      } } sickStart={sickStart} setSickStart={function (value: SetStateAction<string>): void {
+                        setSickStart(value);
+                      } } sickEnd={sickEnd} setSickEnd={function (value: SetStateAction<string>): void {
+                        setSickEnd(value);
+                      } } />
                     </>
                   case 'HealthCheck':
                     return  <>
@@ -438,49 +416,6 @@ const AddEntryForm = ({ entries, setEntries, diagnoses } : AddEntryFormProps) =>
               })()}
             </>
           </Typography>
-            {/* <TextField
-              label="Description"
-              fullWidth 
-              value={description}
-              onChange={({ target }) => setDescription(target.value)}
-            />
-            <TextField
-              label="Date"
-              placeholder="YYYY-MM-DD"
-              // fullWidth
-              value={date}
-              onChange={({ target }) => setDate(target.value)}
-            />
-            <TextField
-              label="Specialist"
-              fullWidth
-              value={specialist}
-              onChange={({ target }) => setSpecialist(target.value)}
-            /> */}
-            {/* <TextField
-              label="Social security number"
-              fullWidth
-              value={ssn}
-              onChange={({ target }) => setSsn(target.value)}
-            /> */}
-
-            {/* <InputLabel style={{ marginTop: 20 }}>Gender</InputLabel>
-            <Select
-              label="Gender"
-              fullWidth
-              value={gender}
-              onChange={onGenderChange}
-            >
-            {genderOptions.map(option =>
-              <MenuItem
-                key={option.label}
-                value={option.value}
-              >
-                {option.label
-              }</MenuItem>
-            )}
-            </Select> */}
-
             <Grid>
               <Grid item>
                 <Button
