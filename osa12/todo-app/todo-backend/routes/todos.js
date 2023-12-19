@@ -1,5 +1,6 @@
 const express = require('express');
-const { Todo } = require('../mongo')
+const { Todo } = require('../mongo');
+const { update } = require('../mongo/models/Todo');
 const router = express.Router();
 
 /* GET todos listing. */
@@ -41,7 +42,16 @@ singleRouter.get('/', async (req, res) => {
 
 /* PUT todo. */
 singleRouter.put('/', async (req, res) => {
-  res.sendStatus(405); // Implement this
+  console.log(req.body, req.todo)
+  // if(!req.todo) {
+  //   return res.sendStatus(404)
+  // }
+  const updatedTodo = await Todo.findByIdAndUpdate(req.todo.id, req.body, {
+    new: true
+  })
+  
+  res.send(updatedTodo);
+  // res.sendStatus(405); // Implement this
 });
 
 router.use('/:id', findByIdMiddleware, singleRouter)
