@@ -20,7 +20,7 @@ services:
     volumes: # Declare the volume
       - ./redis_data:/data
   server:
-    image: hello-back-dev
+    image: todo-back-dev
     volumes:
       - ./:/usr/src/app
     ports:

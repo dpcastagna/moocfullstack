@@ -24,7 +24,7 @@ services:
     volumes: # Declare the volume
       - ./todo-backend/redis_data:/data
   server:
-    image: todo-express-backend
+    image: todo-back-dev
     volumes:
       - ./todo-backend:/usr/src/app
     ports:
@@ -44,3 +44,4 @@ services:
       - server
 volumes:  
   mongo_data:
+  redis_data:
