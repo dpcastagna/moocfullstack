@@ -5,7 +5,7 @@ const { REDIS_URL } = require('../util/config')
 let getAsync
 let setAsync
 
-console.log(REDIS_URL)
+// console.log(REDIS_URL)
 
 if (!REDIS_URL) {
   const redisIsDisabled = () => {
