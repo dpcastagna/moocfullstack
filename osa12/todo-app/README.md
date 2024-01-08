@@ -1,4 +1,9 @@
 
+sudo docker-compose up
+
+sudo docker build -t todo-back-prod .  
+
+sudo docker build -t todo-front-prod .  
 
 ## Fullstack dev run command:  
 sudo docker compose -f docker-compose.dev.yml up  
