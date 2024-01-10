@@ -1,5 +1,5 @@
 
-sudo docker-compose up
+sudo docker-compose up  
 
 sudo docker build -t todo-back-prod .  
 
