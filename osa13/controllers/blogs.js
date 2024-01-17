@@ -1,4 +1,6 @@
 const router = require('express').Router()
+const jwt = require('jsonwebtoken')
+const { SECRET } = require('../util/config')
 
 const { Blog, User } = require('../models')
 
@@ -7,8 +9,30 @@ const blogFinder = async (req, res, next) => {
   next()
 }
 
+const tokenExtractor = (req, res, next) => {
+  const authorization = req.get('authorization')
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    try {
+      console.log(authorization.substring(7))
+      req.decodedToken = jwt.verify(authorization.substring(7), SECRET)
+    } catch (error){
+      console.log(error)
+      return res.status(401).json({ error: 'token invalid' })
+    }
+  } else {
+    return res.status(401).json({ error: 'token missing' })
+  }
+  next()
+}
+
 router.get('/', async (req, res) => {
-  const blogs = await Blog.findAll()
+  const blogs = await Blog.findAll({
+    attributes: { exclude: ['userId'] },
+    include: {
+      model: User,
+      attributes: ['name']
+    }
+  })
   res.json(blogs)
 })
 
@@ -20,9 +44,9 @@ router.get('/:id', blogFinder, async (req, res) => {
 }
 })
 
-router.post('/', async (req, res) => {
+router.post('/',tokenExtractor, async (req, res) => {
   try {
-    const user = await User.findOne()
+    const user = await User.findByPk(req.decodedToken.id)
     const blog = await Blog.create({ ...req.body, userId: user.id })
     return res.json(blog)
   } catch(error) {
@@ -30,20 +54,22 @@ router.post('/', async (req, res) => {
   }
 })
 
-router.delete('/:id', async (req, res) => {
-  await Blog.destroy({where: {id: req.params.id}})
-  res.status(204).end()
-  // try {
-  //   const blog = await Blog.findByPk(req.params.id)
-  //   if (blog){
-  //     await Blog.destroy({where: {id: req.params.id}})
-  //     return res.status(204).end()
-  //   } else {
-  //     return res.status(404).end()
-  //   }
-  // } catch(error) {
-  //   return res.status(400).json({ error })
-  // }
+router.delete('/:id', tokenExtractor, async (req, res) => {
+  // await Blog.destroy({where: {id: req.params.id}})
+  // res.status(204).end()
+  try {
+    const user = await User.findByPk(req.decodedToken.id)
+    const blog = await Blog.findByPk(req.params.id)
+    // console.log(user, blog)
+    if (blog && user && user.dataValues.id === blog.dataValues.userId){
+      await Blog.destroy({where: {id: req.params.id}})
+      return res.status(204).end()
+    } else {
+      return res.status(404).end()
+    }
+  } catch(error) {
+    return res.status(400).json({ error })
+  }
 })
 
 router.put('/:id', blogFinder, async (req, res) => {
