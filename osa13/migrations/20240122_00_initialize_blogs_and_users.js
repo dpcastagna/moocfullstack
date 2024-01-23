@@ -23,12 +23,31 @@ module.exports = {
         type: DataTypes.INTEGER,
         defaultValue: 0
       },
-      createdAt: {
-        type: DataTypes.DATE
+      created_at: {
+        type: DataTypes.DATE,
+        // allowNull: false,
+        defaultValue: DataTypes.NOW,
       },
-      updatedAt: {
-        type: DataTypes.DATE
+      updated_at: {
+        type: DataTypes.DATE,
+        // allowNull: false,
+        defaultValue: DataTypes.NOW,
       },
+      year: {
+        type: DataTypes.INTEGER,
+        // allowNull: false,
+        // defaultValue: DataTypes.NOW,
+        validate: {
+          min: {
+            args: [[1991]],
+            msg: 'Year must be at least 1991!'
+          },
+          max: {
+            args: [[new Date().getFullYear()]],
+            msg: `Year can be at most ${new Date().getFullYear()}!`
+          }
+        }
+      }
     })
     await queryInterface.createTable('users', {
       id: {
@@ -45,32 +64,57 @@ module.exports = {
         type: DataTypes.STRING,
         allowNull: false
       },
+      created_at: {
+        type: DataTypes.DATE,
+        // allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
+      updated_at: {
+        type: DataTypes.DATE,
+        // allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
     })
     await queryInterface.addColumn('blogs', 'user_id', {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: { model: 'users', key: 'id' },
     })
-    await queryInterface.addColumn('blogs', 'created_at', {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
-    })
-    await queryInterface.addColumn('blogs', 'updated_at', {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
-    })
-    await queryInterface.addColumn('users', 'created_at', {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
-    })
-    await queryInterface.addColumn('users', 'updated_at', {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
-    })
+    // await queryInterface.addColumn('blogs', 'year', {
+    //   type: DataTypes.INTEGER,
+    //   // allowNull: false,
+    //   // defaultValue: DataTypes.NOW,
+    //   validate: {
+    //     min: {
+    //       args: [[1991]],
+    //       msg: 'Year must be at least 1991!'
+    //     },
+    //     max: {
+    //       args: [[new Date().getFullYear()]],
+    //       msg: `Year can be at most ${new Date().getFullYear()}!`
+    //     }
+    //   }
+    // })
+    // await queryInterface.addColumn('blogs', 'created_at', {
+    //   type: DataTypes.DATE,
+    //   // allowNull: false,
+    //   defaultValue: DataTypes.NOW,
+    // })
+    // await queryInterface.addColumn('blogs', 'updated_at', {
+    //   type: DataTypes.DATE,
+    //   // allowNull: false,
+    //   defaultValue: DataTypes.NOW,
+    // })
+    // await queryInterface.addColumn('users', 'created_at', {
+    //   type: DataTypes.DATE,
+    //   allowNull: false,
+    //   defaultValue: DataTypes.NOW,
+    // })
+    // await queryInterface.addColumn('users', 'updated_at', {
+    //   type: DataTypes.DATE,
+    //   allowNull: false,
+    //   defaultValue: DataTypes.NOW,
+    // })
   },
   down: async ({ context: queryInterface }) => {
     await queryInterface.dropTable('blogs')
