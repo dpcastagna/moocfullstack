@@ -41,6 +41,34 @@ router.post('/', async (req, res) => {
   }
 })
 
+router.put('/:id', tokenExtractor, async (req, res) => {
+  try {
+    const user = await User.findByPk(req.decodedToken.id)
+    const oldReading = await ReadingList.findByPk(req.params.id)
+    // console.log(user, oldReading, req.body)
+    if (oldReading && user && user.dataValues.id === oldReading.dataValues.userId){
+      oldReading.read = true
+      await oldReading.save()
+      return res.status(204).end()
+    } else {
+      return res.status(404).json({ error: 'Unauthorized user!' })
+    }
+  } catch(error) {
+    return res.status(400).json({ error })
+  }
+  // req.blog.likes = req.body.likes
+  // await req.blog.save()
+  // res.json(req.blog)
+  // const blog = await Blog.findByPk(req.params.id)
+  // if (blog) {
+  //   blog.likes = req.body.likes
+  //   await blog.save()
+  //   res.json(blog)
+  // } else {
+  //   res.status(404).end()
+  // }
+})
+
 // router.get('/', async (req, res) => {
 //   let where = {}
 
@@ -87,11 +115,7 @@ router.post('/', async (req, res) => {
 // }
 // })
 
-
-
 // router.delete('/:id', tokenExtractor, async (req, res) => {
-//   // await Blog.destroy({where: {id: req.params.id}})
-//   // res.status(204).end()
 //   try {
 //     const user = await User.findByPk(req.decodedToken.id)
 //     const blog = await Blog.findByPk(req.params.id)
@@ -105,20 +129,6 @@ router.post('/', async (req, res) => {
 //   } catch(error) {
 //     return res.status(400).json({ error })
 //   }
-// })
-
-// router.put('/:id', blogFinder, async (req, res) => {
-//   req.blog.likes = req.body.likes
-//   await req.blog.save()
-//   res.json(req.blog)
-//   // const blog = await Blog.findByPk(req.params.id)
-//   // if (blog) {
-//   //   blog.likes = req.body.likes
-//   //   await blog.save()
-//   //   res.json(blog)
-//   // } else {
-//   //   res.status(404).end()
-//   // }
 // })
 
 module.exports = router
