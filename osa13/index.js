@@ -4,23 +4,13 @@ const app = express()
 
 const { PORT } = require('./util/config')
 const { connectToDatabase } = require('./util/db')
-const { errorHandler } = require('./util/errorHandler')
+const { errorHandler } = require('./util/middlewares')
 
 const blogsRouter = require('./controllers/blogs')
 const usersRouter = require('./controllers/users')
 const loginRouter = require('./controllers/login')
 const authorRouter = require('./controllers/authors')
 const readinglistsRouter = require('./controllers/readinglists')
-
-// const errorHandler = (error, request, response, next) => {
-//   console.error(error.message)
-
-//   if (error.name === 'CastError') {
-//     return response.status(400).send({ error: 'malformatted id' })
-//   }
-
-//   next(error)
-// }
 
 app.use(express.json())
 

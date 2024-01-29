@@ -56,17 +56,6 @@ router.put('/:id', tokenExtractor, async (req, res) => {
   } catch(error) {
     return res.status(400).json({ error })
   }
-  // req.blog.likes = req.body.likes
-  // await req.blog.save()
-  // res.json(req.blog)
-  // const blog = await Blog.findByPk(req.params.id)
-  // if (blog) {
-  //   blog.likes = req.body.likes
-  //   await blog.save()
-  //   res.json(blog)
-  // } else {
-  //   res.status(404).end()
-  // }
 })
 
 // router.get('/', async (req, res) => {

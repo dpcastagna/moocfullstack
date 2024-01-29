@@ -44,12 +44,6 @@ router.get('/', async (req, res) => {
         }
       ]
     }
-    // where.title = {
-    //   [Op.iLike]: `%${req.query.search}%`
-    // }
-    // where.author = {
-    //   [Op.iLike]: `%${req.query.search}%`
-    // }
   }
 
   const blogs = await Blog.findAll({
@@ -83,12 +77,9 @@ router.post('/',tokenExtractor, async (req, res) => {
 })
 
 router.delete('/:id', tokenExtractor, async (req, res) => {
-  // await Blog.destroy({where: {id: req.params.id}})
-  // res.status(204).end()
   try {
     const user = await User.findByPk(req.decodedToken.id)
     const blog = await Blog.findByPk(req.params.id)
-    // console.log(user, blog)
     if (blog && user && user.dataValues.id === blog.dataValues.userId){
       await Blog.destroy({where: {id: req.params.id}})
       return res.status(204).end()
@@ -104,14 +95,6 @@ router.put('/:id', blogFinder, async (req, res) => {
   req.blog.likes = req.body.likes
   await req.blog.save()
   res.json(req.blog)
-  // const blog = await Blog.findByPk(req.params.id)
-  // if (blog) {
-  //   blog.likes = req.body.likes
-  //   await blog.save()
-  //   res.json(blog)
-  // } else {
-  //   res.status(404).end()
-  // }
 })
 
 module.exports = router

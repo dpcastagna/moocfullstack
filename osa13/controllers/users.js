@@ -17,12 +17,17 @@ router.post('/', async (req, res, next) => {
     const user = await User.create(req.body)
     res.json(user)
   } catch(error) {
-    // return res.status(400).json({ error })
     next(error)
   }
 })
 
 router.get('/:id', async (req, res) => {
+  let where = {}
+
+  if (req.query.read) {
+    where.read = req.query.read === 'true'
+  }
+
   const user = await User.findByPk(req.params.id, { 
     attributes: { exclude: ['id', 'createdAt', 'updatedAt'] },
     include:[{
@@ -35,16 +40,10 @@ router.get('/:id', async (req, res) => {
         attributes: { exclude: ['userId', 'createdAt', 'updatedAt'] },
         through: {
           as: 'readinglists',
-          attributes: {exclude: ['userId', 'blogId']}
+          attributes: {exclude: ['userId', 'blogId']},
+          where,
         },
       },
-      // {
-      //   model: Team,
-      //   attributes: ['name', 'id'],
-      //   through: {
-      //     attributes: []
-      //   }
-      // },
     ]
   })
   if (user) {
