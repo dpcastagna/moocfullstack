@@ -1,3 +1,6 @@
+const jwt = require('jsonwebtoken')
+const { SECRET } = require('./config')
+
 const errorHandler = (error, req, res, next) => {
   console.error(error.message)
   // console.log("errorHandlerissa")
