@@ -1,6 +1,7 @@
 const router = require('express').Router()
 
 const { User, Blog } = require('../models')
+const { banCheck } = require('../util/middlewares')
 
 router.get('/', async (req, res) => {
   const users = await User.findAll({
@@ -55,6 +56,7 @@ router.get('/:id', async (req, res) => {
 
 router.put('/:username', async (req, res) => {
   const user = await User.findOne({ where: { username: req.params.username } })
+  banCheck(user, res)
   if (user) {
     user.name = req.body.name
     await user.save()

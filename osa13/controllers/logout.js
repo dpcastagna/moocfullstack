@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken')
 const router = require('express').Router()
 
 const ActiveSession = require('../models/active_session')
@@ -13,7 +12,7 @@ router.delete('/', tokenExtractor, async (req, res) => {
     if (session){
       // console.log('ifissä')
       await ActiveSession.destroy({ where: { token: authorization.substring(7) }})
-      return res.status(204).end()
+      return res.status(203).json({message: 'Logout success!'})
     } else {
       return res.status(404).end()
     }
